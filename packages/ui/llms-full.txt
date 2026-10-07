@@ -160,6 +160,18 @@ One row of a list: media, text, actions.
 
 The nothing-here-yet state, with a way out.
 
+# form
+
+A validated form on @prestgg/formbox, with a submit button that reports its busy state.
+
+Dependencies: @prestgg/formbox
+
+# field
+
+One control with its label, description and error, wired together by id.
+
+Dependencies: @prestgg/formbox
+
 # collapsible
 
 One region that shows or hides, with a trigger that reports its state.

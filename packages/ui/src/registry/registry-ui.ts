@@ -123,6 +123,18 @@ export const ui: RegistryItem[] = [
     registryDependencies: ["cn", "split", "variants"],
     files: [{ path: "ui/empty.tsx", type: "ui", target: "empty.tsx" }] },
 
+  // --- forms ------------------------------------------------------------
+  { name: "form", type: "registry:ui", title: "Form",
+    description: "A validated form on @prestgg/formbox, with a submit button that reports its busy state.",
+    dependencies: ["@prestgg/formbox"],
+    registryDependencies: ["cn", "split", "button", "slot"],
+    files: [{ path: "ui/form.tsx", type: "ui", target: "form.tsx" }] },
+  { name: "field", type: "registry:ui", title: "Field",
+    description: "One control with its label, description and error, wired together by id.",
+    dependencies: ["@prestgg/formbox"],
+    registryDependencies: ["cn", "split", "slot", "label", "form"],
+    files: [{ path: "ui/field.tsx", type: "ui", target: "field.tsx" }] },
+
   // --- disclosure -------------------------------------------------------
   { name: "collapsible", type: "registry:ui", title: "Collapsible",
     description: "One region that shows or hides, with a trigger that reports its state.",

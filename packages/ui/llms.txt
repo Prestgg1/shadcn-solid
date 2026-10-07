@@ -40,6 +40,8 @@ Add a component: `bunx solid-ui@latest add button dialog`
 - `button-group`: Joins adjacent buttons or inputs into one control.
 - `item`: One row of a list: media, text, actions.
 - `empty`: The nothing-here-yet state, with a way out.
+- `form`: A validated form on @prestgg/formbox, with a submit button that reports its busy state.
+- `field`: One control with its label, description and error, wired together by id.
 - `collapsible`: One region that shows or hides, with a trigger that reports its state.
 - `accordion`: Several disclosures where opening one can close the others. One tab stop, arrows between triggers.
 - `tabs`: Panels switched by one tab stop. Automatic activation switches as focus moves; manual waits for Enter.

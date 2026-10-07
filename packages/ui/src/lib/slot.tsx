@@ -33,17 +33,17 @@ const RESERVED = new Set(["children"]);
  * compiled into a real DOM element. So instead of cloning, this applies the
  * component's attributes to that element.
  *
- * The consequence is one honest limitation: the attributes are written once,
- * when the slot mounts. If the component's `class` or `data-state` later
- * changes, the caller's element does not follow — `class` was already
- * consumed by the browser. For everything else (event handlers, `aria-*`,
- * `disabled`) the element keeps working normally.
+ * **Attributes stay live.** Solid's reactivity reaches the child's own
+ * bindings but not attributes applied from outside, so the applied values are
+ * read inside the effect's compute phase. That is what lets `aria-invalid`
+ * flip when validation catches a mistake, and `data-state` follow a value
+ * that changes after mount — neither would update if the attributes were
+ * written once.
  *
- * When a class has to change after mount, use the `as` prop instead:
- *
- * ```tsx
- * <Button as="a" href="/docs">Docs</Button>
- * ```
+ * `class` is the one value applied by *merging*, so it is rebuilt from the
+ * class the child started with rather than from what is on the element now.
+ * Merging against the live value would append the component's class again on
+ * every pass and grow the string without bound.
  *
  * ```tsx
  * const attributes = () => ({ "data-slot": "button", class: "…" });
@@ -65,13 +65,19 @@ export function asChild(
     );
   }
 
+  /** The child's own class, captured before we touch the element. */
+  const baseClass = node.getAttribute("class");
+
+  // The compute phase reads whatever `inject` reads, so the effect re-runs
+  // when one of those values changes. That is the whole mechanism — the
+  // apply phase below cannot track anything on its own.
   createEffect(
-    () => node,
-    () => {
+    () => inject(propsOf(node)),
+    (injected) => {
       /** Listeners added this pass, so the next pass can remove them. */
       const listeners: [string, EventListener][] = [];
 
-      for (const [key, value] of Object.entries(inject(propsOf(node)))) {
+      for (const [key, value] of Object.entries(injected)) {
         if (RESERVED.has(key)) continue;
 
         // A function is behaviour, not markup. `ref` is called; `onX`
@@ -92,8 +98,7 @@ export function asChild(
         }
 
         if (key === "class") {
-          const existing = node.getAttribute("class");
-          const next = [value, existing].filter(Boolean).join(" ");
+          const next = [value, baseClass].filter(Boolean).join(" ");
           if (next) node.setAttribute("class", next);
           continue;
         }

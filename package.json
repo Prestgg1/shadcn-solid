@@ -17,8 +17,12 @@
     "check": "bun run lint && bun run typecheck && bun run test"
   },
   "devDependencies": {
+    "@prestgg/formbox": "0.3.0",
     "@types/bun": "^1.4.2",
     "oxlint": "^1.73.0",
     "typescript": "^5.9.3"
+  },
+  "patchedDependencies": {
+    "@prestgg/formbox@0.3.0": "patches/@prestgg+formbox@0.3.0.patch"
   }
 }
