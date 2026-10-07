@@ -4,7 +4,7 @@ import { dirname, join, relative, resolve } from "node:path";
 
 import prompts from "prompts";
 
-import { resolveAlias, targetDirectory } from "../utils/alias";
+import { detectAliasPrefix, resolveAlias, targetDirectory } from "../utils/alias";
 import { CONFIG_FILE, DEFAULT_CONFIG, normalizeConfig, type ComponentsConfig } from "../utils/config";
 import { error, info, log, success, warn } from "../utils/log";
 import { parseAddress, resolveRegistry, type RegistryResolver } from "../utils/registry";
@@ -35,6 +35,29 @@ async function ensureParent(path: string): Promise<void> {
 }
 
 /**
+ * Point a file's own aliases at the project's.
+ *
+ * The registry publishes components that import each other through the
+ * library's own paths — `~/ui/button`, `~/lib/cn`. Those resolve inside this
+ * repository and nowhere else: a consuming project puts its components in its
+ * own `ui` directory and may not have a `~` alias at all. So the prefixes are
+ * rewritten to whatever `components.json` says, which is the only place the
+ * project's real paths are written down.
+ *
+ * `~/lib/utils` is included alongside `~/lib/cn` and friends because that is
+ * the name shadcn projects already have, so a component the user wrote against
+ * it keeps working.
+ */
+export function rewriteImports(content: string, config: ComponentsConfig): string {
+  const ui = config.aliases.ui.replace(/\/$/, "");
+  const lib = config.aliases.lib.replace(/\/$/, "");
+
+  return content
+    .replace(/from "~\/ui\/([^"]+)"/g, `from "${ui}/$1"`)
+    .replace(/from "~\/lib\/([^"]+)"/g, `from "${lib}/$1"`);
+}
+
+/**
  * Write one registry file into the project.
  *
  * Existing files are never silently replaced: that is the whole point of
@@ -49,6 +72,7 @@ async function writeFileIntoProject(
 ): Promise<"written" | "skipped" | "unchanged"> {
   if (typeof file.content !== "string") return "skipped";
 
+  const content = rewriteImports(file.content, config);
   const directory = await targetDirectory(cwd, config, file.type);
   const name = file.target?.split("/").pop() ?? file.path.split("/").pop();
   if (!name) return "skipped";
@@ -57,12 +81,12 @@ async function writeFileIntoProject(
 
   if (existsSync(destination)) {
     const current = await readFile(destination, "utf8");
-    if (current === file.content) return "unchanged";
+    if (current === content) return "unchanged";
     if (!overwrite) return "skipped";
   }
 
   await ensureParent(destination);
-  await writeFile(destination, file.content, "utf8");
+  await writeFile(destination, content, "utf8");
   return "written";
 }
 
@@ -246,6 +270,22 @@ export async function init(options: { cwd: string; yes: boolean }): Promise<void
     throw new Error(`No package.json in ${cwd}. Run this from a project root.`);
   }
 
+  // The project's own alias, if it has one. Asking a SolidStart project for
+  // its paths and then writing `@/` into `components.json` produces a
+  // config the project's `tsconfig` cannot resolve, and the user only finds
+  // out when the first component fails to build.
+  const prefix = await detectAliasPrefix(cwd);
+
+  const suggested = prefix
+    ? {
+        ui: `${prefix}/components/ui`,
+        lib: `${prefix}/lib`,
+        hooks: `${prefix}/hooks`,
+        components: `${prefix}/components`,
+        utils: `${prefix}/lib/utils`,
+      }
+    : DEFAULT_CONFIG.aliases;
+
   const answers: Partial<Record<"css" | "ui" | "lib", string>> = options.yes
     ? {}
     : await prompts([
@@ -259,13 +299,13 @@ export async function init(options: { cwd: string; yes: boolean }): Promise<void
           type: "text",
           name: "ui",
           message: "Where should components live?",
-          initial: DEFAULT_CONFIG.aliases.ui,
+          initial: suggested.ui,
         },
         {
           type: "text",
           name: "lib",
           message: "Where should shared helpers live?",
-          initial: DEFAULT_CONFIG.aliases.lib,
+          initial: suggested.lib,
         },
       ]);
 
@@ -276,9 +316,9 @@ export async function init(options: { cwd: string; yes: boolean }): Promise<void
       css: answers.css ?? DEFAULT_CONFIG.tailwind.css,
     },
     aliases: {
-      ...DEFAULT_CONFIG.aliases,
-      ui: answers.ui ?? DEFAULT_CONFIG.aliases.ui,
-      lib: answers.lib ?? DEFAULT_CONFIG.aliases.lib,
+      ...suggested,
+      ui: answers.ui ?? suggested.ui,
+      lib: answers.lib ?? suggested.lib,
     },
   });
 

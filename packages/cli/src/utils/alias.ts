@@ -47,6 +47,31 @@ async function readPathAliases(cwd: string): Promise<Record<string, string>> {
 }
 
 /**
+ * The alias prefix a project already uses, if it has one.
+ *
+ * `init` defaults to `@/`, but a project that has already chosen `~/` —
+ * the SolidStart convention, and the common one — would then get a
+ * `components.json` full of imports its own `tsconfig` cannot resolve. The
+ * fix is to notice first and only ask when there is nothing to notice.
+ *
+ * Only a wildcard mapping counts (`"~/*"`): a literal `"@/*": [...]` is the
+ * shape we want, while a fixed path such as `"~/*x"` is not an alias root.
+ */
+export async function detectAliasPrefix(cwd: string): Promise<string | undefined> {
+  const aliases = await readPathAliases(cwd);
+
+  for (const pattern of Object.keys(aliases)) {
+    if (!pattern.endsWith("/*")) continue;
+    const prefix = pattern.slice(0, -2);
+    // Ignore anything that is not a plain specifier root.
+    if (prefix === "" || /[/.]/.test(prefix)) continue;
+    return prefix;
+  }
+
+  return undefined;
+}
+
+/**
  * Turn a config alias into a project-relative path.
  *
  * An alias like `@/components/ui` becomes `src/components/ui` when the

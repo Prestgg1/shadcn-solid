@@ -51,6 +51,11 @@ Add a component: `bunx solid-ui@latest add button dialog`
 - `dropdown-menu`: A menu of actions. One tab stop, arrows between items, Escape returns focus to the trigger.
 - `combobox`: A text input that filters a list of options, matching text as a case-insensitive substring.
 - `command`: A filterable command palette. The DOM is the list, so filtering cannot drift from what is shown.
+- `carousel`: Slides with previous/next controls and dots. No drag engine — the state machine, not the gesture layer.
+- `input-otp`: A one-time-code field. One hidden input drives the boxes, so paste and SMS autofill work.
+- `chart`: A themed chart container with SVG primitives. Same config shape and --color-N mapping as shadcn, without Recharts.
+- `sonner`: A stack of transient messages, plus the toast() function. The one component you import rather than copy.
+- `navigation-menu`: A bar of links with panels that fly out of the item. Hover-opened, Escape-closable.
 - `dialog`: A modal window: trapped focus, a locked page behind, Escape and scrim dismissal.
 - `alert-dialog`: A dialog that interrupts to confirm. Focus starts on Cancel, so the safe choice is the resting state.
 - `sheet`: A dialog that slides in from an edge.

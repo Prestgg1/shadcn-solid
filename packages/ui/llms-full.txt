@@ -208,6 +208,26 @@ A text input that filters a list of options, matching text as a case-insensitive
 
 A filterable command palette. The DOM is the list, so filtering cannot drift from what is shown.
 
+# carousel
+
+Slides with previous/next controls and dots. No drag engine — the state machine, not the gesture layer.
+
+# input-otp
+
+A one-time-code field. One hidden input drives the boxes, so paste and SMS autofill work.
+
+# chart
+
+A themed chart container with SVG primitives. Same config shape and --color-N mapping as shadcn, without Recharts.
+
+# sonner
+
+A stack of transient messages, plus the toast() function. The one component you import rather than copy.
+
+# navigation-menu
+
+A bar of links with panels that fly out of the item. Hover-opened, Escape-closable.
+
 # dialog
 
 A modal window: trapped focus, a locked page behind, Escape and scrim dismissal.
