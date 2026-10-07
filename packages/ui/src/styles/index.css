@@ -223,3 +223,12 @@
     animation: var(--animate-out);
   }
 }
+/* Indeterminate progress: a full-width bar sweeping across the track. */
+@keyframes progress-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

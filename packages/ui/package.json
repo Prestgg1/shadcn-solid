@@ -25,7 +25,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "bun test --conditions=browser",
-    "registry": "bun run ./src/scripts/build-registry.ts"
+    "registry": "bun run ./src/scripts/build-registry.ts",
+    "build": "bun run registry"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.8.0",
@@ -63,8 +64,11 @@
   },
   "homepage": "https://github.com/Prestgg1/shadcn-solid#readme",
   "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-typescript": "^7.26.0",
     "@happy-dom/global-registrator": "^20.14.5",
     "@solidjs/testing-library": "^0.8.10",
+    "babel-preset-solid": "^1.9.16",
     "happy-dom": "^20.14.5"
   }
 }

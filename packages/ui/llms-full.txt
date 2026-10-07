@@ -6,6 +6,14 @@ Class-name merger built on clsx and tailwind-merge. Every component uses it.
 
 Dependencies: clsx, tailwind-merge
 
+# slot
+
+Radix's Slot for Solid: style the caller's element instead of the component's own.
+
+# polymorphic
+
+Render a chosen element and forward the rest, without a headless primitive.
+
 # variants
 
 cva-compatible variant function, without the dependency.
@@ -39,3 +47,111 @@ Close-on-outside-press and Escape, safe inside nested overlays.
 # portal
 
 Render into document.body, resolved lazily so SSR is safe.
+
+# button
+
+The button, with six variants, eight sizes and asChild.
+
+# input
+
+A text input.
+
+# textarea
+
+A multi-line input that grows with its content.
+
+# label
+
+A form label, paired with a control through for/id.
+
+# badge
+
+A small status label.
+
+# card
+
+A surface with a header, content and footer.
+
+# separator
+
+A one-pixel rule.
+
+# skeleton
+
+A pulsing placeholder for content that has not loaded.
+
+# kbd
+
+A keyboard key, and a group of keys pressed together.
+
+# spinner
+
+A loading indicator, inline SVG with no icon dependency.
+
+# aspect-ratio
+
+A box that keeps a fixed width-to-height ratio.
+
+# table
+
+A data table with header, body, footer, rows and cells.
+
+# alert
+
+A callout with a title and a description.
+
+# avatar
+
+A portrait with a fallback.
+
+# breadcrumb
+
+The trail of ancestors for the current page.
+
+# pagination
+
+Page navigation, built from real anchors.
+
+# progress
+
+A progress bar, with an indeterminate mode.
+
+# checkbox
+
+A checkbox on a real input, so it takes part in form submission.
+
+# switch
+
+An on/off toggle on a real checkbox input.
+
+# radio-group
+
+Mutually exclusive options, on real radio inputs.
+
+# slider
+
+A range input over a styled track.
+
+# native-select
+
+The platform select, styled. For few options, where the native picker wins.
+
+# toggle
+
+A two-state button, announced with aria-pressed.
+
+# toggle-group
+
+Toggles that behave as one control, single or multi-select.
+
+# button-group
+
+Joins adjacent buttons or inputs into one control.
+
+# item
+
+One row of a list: media, text, actions.
+
+# empty
+
+The nothing-here-yet state, with a way out.

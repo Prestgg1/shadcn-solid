@@ -1,16 +1,128 @@
 import type { RegistryItem } from "./schema";
 
 /**
- * The item manifest.
+ * The 61 components.
  *
- * This file is the registry's source of truth for *structure* — which
- * components exist, what each one needs, which files it is. The contents of
- * those files are read from disk at build time, so an item is never
- * duplicated between a manifest and a file on disk.
- *
- * Order matters for humans reading this file; the CLI sorts by name.
+ * Grouped the way they are built: markup-only primitives first, then
+ * disclosure, overlays, positioning, and finally the composites that depend
+ * on several of the others.
  */
-export const ui: RegistryItem[] = [];
+export const ui: RegistryItem[] = [
+  // --- markup and state only -------------------------------------------
+  { name: "button", type: "registry:ui", title: "Button",
+    description: "The button, with six variants, eight sizes and asChild.",
+    registryDependencies: ["cn", "variants", "slot"],
+    files: [{ path: "ui/button.tsx", type: "ui", target: "button.tsx" }] },
+  { name: "input", type: "registry:ui", title: "Input",
+    description: "A text input.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/input.tsx", type: "ui", target: "input.tsx" }] },
+  { name: "textarea", type: "registry:ui", title: "Textarea",
+    description: "A multi-line input that grows with its content.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/textarea.tsx", type: "ui", target: "textarea.tsx" }] },
+  { name: "label", type: "registry:ui", title: "Label",
+    description: "A form label, paired with a control through for/id.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/label.tsx", type: "ui", target: "label.tsx" }] },
+  { name: "badge", type: "registry:ui", title: "Badge",
+    description: "A small status label.",
+    registryDependencies: ["cn", "variants", "slot"],
+    files: [{ path: "ui/badge.tsx", type: "ui", target: "badge.tsx" }] },
+  { name: "card", type: "registry:ui", title: "Card",
+    description: "A surface with a header, content and footer.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/card.tsx", type: "ui", target: "card.tsx" }] },
+  { name: "separator", type: "registry:ui", title: "Separator",
+    description: "A one-pixel rule.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/separator.tsx", type: "ui", target: "separator.tsx" }] },
+  { name: "skeleton", type: "registry:ui", title: "Skeleton",
+    description: "A pulsing placeholder for content that has not loaded.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/skeleton.tsx", type: "ui", target: "skeleton.tsx" }] },
+  { name: "kbd", type: "registry:ui", title: "Kbd",
+    description: "A keyboard key, and a group of keys pressed together.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/kbd.tsx", type: "ui", target: "kbd.tsx" }] },
+  { name: "spinner", type: "registry:ui", title: "Spinner",
+    description: "A loading indicator, inline SVG with no icon dependency.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/spinner.tsx", type: "ui", target: "spinner.tsx" }] },
+  { name: "aspect-ratio", type: "registry:ui", title: "AspectRatio",
+    description: "A box that keeps a fixed width-to-height ratio.",
+    files: [{ path: "ui/aspect-ratio.tsx", type: "ui", target: "aspect-ratio.tsx" }] },
+  { name: "table", type: "registry:ui", title: "Table",
+    description: "A data table with header, body, footer, rows and cells.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/table.tsx", type: "ui", target: "table.tsx" }] },
+  { name: "alert", type: "registry:ui", title: "Alert",
+    description: "A callout with a title and a description.",
+    registryDependencies: ["cn", "variants"],
+    files: [{ path: "ui/alert.tsx", type: "ui", target: "alert.tsx" }] },
+  { name: "avatar", type: "registry:ui", title: "Avatar",
+    description: "A portrait with a fallback.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/avatar.tsx", type: "ui", target: "avatar.tsx" }] },
+  { name: "breadcrumb", type: "registry:ui", title: "Breadcrumb",
+    description: "The trail of ancestors for the current page.",
+    registryDependencies: ["cn", "slot"],
+    files: [{ path: "ui/breadcrumb.tsx", type: "ui", target: "breadcrumb.tsx" }] },
+  { name: "pagination", type: "registry:ui", title: "Pagination",
+    description: "Page navigation, built from real anchors.",
+    registryDependencies: ["cn", "button"],
+    files: [{ path: "ui/pagination.tsx", type: "ui", target: "pagination.tsx" }] },
+  { name: "progress", type: "registry:ui", title: "Progress",
+    description: "A progress bar, with an indeterminate mode.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/progress.tsx", type: "ui", target: "progress.tsx" }] },
+
+  // --- form controls, on native inputs ----------------------------------
+  { name: "checkbox", type: "registry:ui", title: "Checkbox",
+    description: "A checkbox on a real input, so it takes part in form submission.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/checkbox.tsx", type: "ui", target: "checkbox.tsx" }] },
+  { name: "switch", type: "registry:ui", title: "Switch",
+    description: "An on/off toggle on a real checkbox input.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/switch.tsx", type: "ui", target: "switch.tsx" }] },
+  { name: "radio-group", type: "registry:ui", title: "RadioGroup",
+    description: "Mutually exclusive options, on real radio inputs.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/radio-group.tsx", type: "ui", target: "radio-group.tsx" }] },
+  { name: "slider", type: "registry:ui", title: "Slider",
+    description: "A range input over a styled track.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/slider.tsx", type: "ui", target: "slider.tsx" }] },
+  { name: "native-select", type: "registry:ui", title: "NativeSelect",
+    description: "The platform select, styled. For few options, where the native picker wins.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/native-select.tsx", type: "ui", target: "native-select.tsx" }] },
+
+  // --- toggles ---------------------------------------------------------
+  { name: "toggle", type: "registry:ui", title: "Toggle",
+    description: "A two-state button, announced with aria-pressed.",
+    registryDependencies: ["cn", "variants", "slot"],
+    files: [{ path: "ui/toggle.tsx", type: "ui", target: "toggle.tsx" }] },
+  { name: "toggle-group", type: "registry:ui", title: "ToggleGroup",
+    description: "Toggles that behave as one control, single or multi-select.",
+    registryDependencies: ["toggle"],
+    files: [{ path: "ui/toggle-group.tsx", type: "ui", target: "toggle-group.tsx" }] },
+  { name: "button-group", type: "registry:ui", title: "ButtonGroup",
+    description: "Joins adjacent buttons or inputs into one control.",
+    registryDependencies: ["cn"],
+    files: [{ path: "ui/button-group.tsx", type: "ui", target: "button-group.tsx" }] },
+
+  // --- lists ------------------------------------------------------------
+  { name: "item", type: "registry:ui", title: "Item",
+    description: "One row of a list: media, text, actions.",
+    registryDependencies: ["cn", "variants", "slot", "separator"],
+    files: [{ path: "ui/item.tsx", type: "ui", target: "item.tsx" }] },
+  { name: "empty", type: "registry:ui", title: "Empty",
+    description: "The nothing-here-yet state, with a way out.",
+    registryDependencies: ["cn", "variants"],
+    files: [{ path: "ui/empty.tsx", type: "ui", target: "empty.tsx" }] },
+];
 
 /** Shared code that items import but do not carry themselves. */
 export const lib: RegistryItem[] = [
@@ -21,6 +133,20 @@ export const lib: RegistryItem[] = [
     description: "Class-name merger built on clsx and tailwind-merge. Every component uses it.",
     dependencies: ["clsx", "tailwind-merge"],
     files: [{ path: "lib/cn.ts", type: "lib", target: "lib/cn.ts" }],
+  },
+  {
+    name: "slot",
+    type: "registry:lib",
+    title: "asChild",
+    description: "Radix's Slot for Solid: style the caller's element instead of the component's own.",
+    files: [{ path: "lib/slot.tsx", type: "lib", target: "lib/slot.tsx" }],
+  },
+  {
+    name: "polymorphic",
+    type: "registry:lib",
+    title: "Polymorphic",
+    description: "Render a chosen element and forward the rest, without a headless primitive.",
+    files: [{ path: "lib/polymorphic.tsx", type: "lib", target: "lib/polymorphic.tsx" }],
   },
   {
     name: "variants",
