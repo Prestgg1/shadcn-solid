@@ -1,5 +1,5 @@
-import type { ComponentProps, JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX, ComponentProps } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 
@@ -13,7 +13,7 @@ export interface TextareaProps extends ComponentProps<"textarea"> {}
  * ```
  */
 export function Textarea(props: TextareaProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
 
   return (
     <textarea

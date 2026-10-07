@@ -1,5 +1,5 @@
-import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 
@@ -23,7 +23,7 @@ export interface LabelProps {
  * screen reader announces; never rely on wrapping alone.
  */
 export function Label(props: LabelProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
 
   return (
     <label

@@ -9,7 +9,7 @@
 
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 
 import type { ComponentsConfig } from "./config";
 
@@ -62,19 +62,29 @@ export async function resolveAlias(cwd: string, alias: string): Promise<string> 
     return alias.startsWith(pattern.slice(0, star)) && alias.endsWith(pattern.slice(star + 1));
   });
 
-  if (!match) return alias.replace(/^[@~.]{1,2}\//, "").replace(/^@/, "");
+  if (match) {
+    const [pattern, target] = match;
+    const star = pattern.indexOf("*");
 
-  const [pattern, target] = match;
-  const star = pattern.indexOf("*");
+    if (star === -1) return target;
 
-  if (star === -1) return target;
+    const prefix = pattern.slice(0, star);
+    const suffix = pattern.slice(star + 1);
+    const middle = alias.slice(prefix.length, alias.length - suffix.length || undefined);
+    const base = target.slice(0, target.indexOf("*"));
 
-  const prefix = pattern.slice(0, star);
-  const suffix = pattern.slice(star + 1);
-  const middle = alias.slice(prefix.length, alias.length - suffix.length || undefined);
-  const base = target.slice(0, target.indexOf("*"));
+    return resolve(cwd, `${base}${middle}`);
+  }
 
-  return resolve(cwd, `${base}${middle}`);
+  // No path mapping covers this alias. The common SolidStart and Vite
+  // layouts map `~/*` or `@/*` rather than the prefix `init` just wrote, so
+  // fall back to the alias's own path under `src/` when that directory
+  // exists — writing to the project root instead is a worse guess.
+  const relativePath = alias.replace(/^[@~]{1,2}\//, "");
+  const inSrc = resolve(cwd, "src", relativePath);
+  if (existsSync(resolve(cwd, "src"))) return inSrc;
+
+  return resolve(cwd, relativePath);
 }
 
 /** The directory a file of `type` belongs in, given the project's aliases. */
@@ -91,7 +101,8 @@ export async function targetDirectory(
     case "lib":
       return resolveAlias(cwd, config.aliases.lib);
     case "style":
-      return config.tailwind.css;
+      // A stylesheet is a file, not a directory to scan.
+      return dirname(resolve(cwd, config.tailwind.css));
     default:
       return resolveAlias(cwd, config.aliases.components);
   }

@@ -1,5 +1,5 @@
-import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { asChild } from "~/lib/slot";
 import { variants } from "~/lib/variants";
@@ -10,16 +10,12 @@ const toggleVariants = variants(
     variants: {
       variant: {
         default: "bg-transparent",
-        outline: "border border-input bg-transparent shadow-xs hover:bg-accent hover:text-accent-foreground",
-      },
+        outline: "border border-input bg-transparent shadow-xs hover:bg-accent hover:text-accent-foreground" },
       size: {
         default: "h-9 min-w-9 px-2",
         sm: "h-8 min-w-8 px-1.5",
-        lg: "h-10 min-w-10 px-2.5",
-      },
-    },
-    defaultVariants: { variant: "default", size: "default" },
-  },
+        lg: "h-10 min-w-10 px-2.5" } },
+    defaultVariants: { variant: "default", size: "default" } },
 );
 
 export type ToggleVariant = "default" | "outline";
@@ -54,7 +50,7 @@ export interface ToggleProps {
  * toggle has no text to announce.
  */
 export function Toggle(props: ToggleProps): JSX.Element {
-  const [local, rest] = splitProps(props, [
+  const [local, rest] = split(props, [
     "asChild",
     "children",
     "pressed",
@@ -71,12 +67,11 @@ export function Toggle(props: ToggleProps): JSX.Element {
     type: "button" as const,
     "data-slot": "toggle",
     "data-state": pressed() ? "on" : "off",
-    "aria-pressed": pressed(),
+    "aria-pressed": pressed() ? ("true" as const) : ("false" as const),
     disabled: local.disabled,
     "aria-label": local["aria-label"],
     class: toggleVariants({ variant: local.variant, size: local.size, class: local.class }),
-    onClick: () => local.onPressedChange?.(!pressed()),
-  });
+    onClick: () => local.onPressedChange?.(!pressed()) });
 
   return props.asChild
     ? asChild(() => local.children ?? null, () => attributes())

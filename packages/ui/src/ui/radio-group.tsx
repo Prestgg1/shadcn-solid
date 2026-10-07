@@ -1,4 +1,6 @@
-import { For, type JSX, splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { For } from "solid-js";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 
@@ -92,7 +94,7 @@ function RadioRow(props: RowProps): JSX.Element {
  * of the selection state to keep in sync.
  */
 export function RadioGroup(props: RadioGroupProps): JSX.Element {
-  const [local, rest] = splitProps(props, [
+  const [local, rest] = split(props, [
     "class",
     "options",
     "value",
@@ -100,7 +102,7 @@ export function RadioGroup(props: RadioGroupProps): JSX.Element {
     "onChange",
     "name",
     "disabled",
-  ]);
+  ] as const);
 
   return (
     <div

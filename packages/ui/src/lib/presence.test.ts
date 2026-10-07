@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { createRoot, createSignal, onMount } from "solid-js";
+import { createRoot, createSignal, onSettled } from "solid-js";
 import { createPresence } from "./presence";
 
 const tick = () => Promise.resolve();
@@ -148,7 +148,7 @@ describe("createPresence", () => {
       const [show, set] = createSignal(true);
       presence = createPresence(show);
 
-      onMount(() => {
+      onSettled(() => {
         observed.push(presence.state());
         // Close on the next tick, the way a dialog closes after a confirm.
         setTimeout(() => set(false), 0);

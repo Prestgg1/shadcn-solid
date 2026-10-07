@@ -17,6 +17,7 @@ import { Command } from "commander";
 
 import { add, init } from "./commands/add";
 import { list, search, view } from "./commands/read";
+import { diff, remove } from "./commands/manage";
 import { error, log } from "./utils/log";
 
 const VERSION = "0.1.0";
@@ -55,6 +56,36 @@ program
       overwrite: Boolean(options.overwrite),
       registry: options.registry === undefined ? undefined : String(options.registry),
       silent: Boolean(options.silent),
+    });
+  });
+
+program
+  .command("remove")
+  .description("Delete the files this CLI created.")
+  .argument("[items...]", "Item names to remove.")
+  .option("-c, --cwd <path>", "Working directory.", process.cwd())
+  .option("-r, --registry <url>", "Read items from this registry instead.")
+  .action(async (items: string[], options: Record<string, unknown>) => {
+    await remove(items, {
+      cwd: String(options.cwd),
+      overwrite: false,
+      registry: options.registry === undefined ? undefined : String(options.registry),
+      silent: true,
+    });
+  });
+
+program
+  .command("diff")
+  .description("Show where installed files have drifted from the registry.")
+  .argument("[items...]", "Item names to check. Omit for all.")
+  .option("-c, --cwd <path>", "Working directory.", process.cwd())
+  .option("-r, --registry <url>", "Read items from this registry instead.")
+  .action(async (items: string[], options: Record<string, unknown>) => {
+    await diff(items, {
+      cwd: String(options.cwd),
+      overwrite: false,
+      registry: options.registry === undefined ? undefined : String(options.registry),
+      silent: true,
     });
   });
 

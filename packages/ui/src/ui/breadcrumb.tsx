@@ -1,4 +1,6 @@
-import { Show, type JSX, splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { Show } from "solid-js";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 import { asChild } from "~/lib/slot";
@@ -63,7 +65,7 @@ function MoreHorizontal(): JSX.Element {
  * "Home, Settings" rather than "Home, chevron, Settings".
  */
 export function Breadcrumb(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "aria-label"]);
+  const [local, rest] = split(props, ["class", "aria-label"]);
   return (
     <nav
       data-slot="breadcrumb"
@@ -75,7 +77,7 @@ export function Breadcrumb(props: Part): JSX.Element {
 }
 
 export function BreadcrumbList(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <ol
       data-slot="breadcrumb-list"
@@ -89,7 +91,7 @@ export function BreadcrumbList(props: Part): JSX.Element {
 }
 
 export function BreadcrumbItem(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <li
       data-slot="breadcrumb-item"
@@ -106,11 +108,10 @@ export function BreadcrumbItem(props: Part): JSX.Element {
  * wrapping `<A href="/projects">Projects</A>`.
  */
 export function BreadcrumbLink(props: Part & { asChild?: boolean }): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "asChild", "children"]);
+  const [local, rest] = split(props, ["class", "asChild", "children"]);
   const attributes = () => ({
     "data-slot": "breadcrumb-link",
-    class: cn("transition-colors hover:text-foreground", local.class),
-  });
+    class: cn("transition-colors hover:text-foreground", local.class) });
 
   return props.asChild
     ? asChild(() => local.children ?? null, attributes)
@@ -123,7 +124,7 @@ export function BreadcrumbLink(props: Part & { asChild?: boolean }): JSX.Element
 
 /** The current page: not a link, and announced as current. */
 export function BreadcrumbPage(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <span
       data-slot="breadcrumb-page"
@@ -137,7 +138,7 @@ export function BreadcrumbPage(props: Part): JSX.Element {
 }
 
 export function BreadcrumbSeparator(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "children"]);
+  const [local, rest] = split(props, ["class", "children"]);
   return (
     <li
       data-slot="breadcrumb-separator"
@@ -155,7 +156,7 @@ export function BreadcrumbSeparator(props: Part): JSX.Element {
 
 /** Stands in for collapsed crumbs. The label stays out of the announcement. */
 export function BreadcrumbEllipsis(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <span
       data-slot="breadcrumb-ellipsis"

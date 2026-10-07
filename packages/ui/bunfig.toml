@@ -1,2 +1,5 @@
+# The Solid plugin has to be preloaded for `bun test` under its own key: the
+# top-level `preload` list applies to `bun run` only. Without it, Bun reaches
+# for `react/jsx-dev-runtime` and every `.tsx` fails to load.
 [test]
-preload = ["./src/test/setup.ts"]
+preload = ["./src/test/setup.ts", "./src/test/plugin.ts"]

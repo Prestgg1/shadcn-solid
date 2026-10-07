@@ -1,4 +1,6 @@
-import { Show, type JSX, splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { Show } from "solid-js";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 
@@ -41,7 +43,7 @@ export interface AvatarFallbackProps {
  * decorative when the name is already rendered next to it.
  */
 export function Avatar(props: AvatarProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "size"]);
+  const [local, rest] = split(props, ["class", "size"]);
 
   return (
     <span
@@ -59,16 +61,16 @@ export function Avatar(props: AvatarProps): JSX.Element {
 
 /** The portrait. Renders nothing when `src` is empty or the load fails. */
 export function AvatarImage(props: AvatarImageProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "src", "onError"]);
+  const [local, rest] = split(props, ["class", "src", "onError"]);
 
   return (
     <Show when={local.src !== ""}>
       <img
         data-slot="avatar-image"
-        src={local.src}
         onError={() => local.onError?.()}
         class={cn("aspect-square size-full", local.class)}
         {...rest}
+        src={local.src}
       />
     </Show>
   );
@@ -76,7 +78,7 @@ export function AvatarImage(props: AvatarImageProps): JSX.Element {
 
 /** Shown while there is no image — initials, an icon, a monogram. */
 export function AvatarFallback(props: AvatarFallbackProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
 
   return (
     <span

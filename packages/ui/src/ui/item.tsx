@@ -1,5 +1,5 @@
-import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 import { asChild } from "~/lib/slot";
@@ -13,10 +13,8 @@ const itemVariants = variants(
   {
     variants: {
       variant: { default: "bg-transparent", outline: "border-border", muted: "bg-muted/50" },
-      size: { default: "gap-4 p-4", sm: "gap-2.5 px-4 py-3" },
-    },
-    defaultVariants: { variant: "default", size: "default" },
-  },
+      size: { default: "gap-4 p-4", sm: "gap-2.5 px-4 py-3" } },
+    defaultVariants: { variant: "default", size: "default" } },
 );
 
 const itemMediaVariants = variants(
@@ -26,11 +24,8 @@ const itemMediaVariants = variants(
       variant: {
         default: "bg-transparent",
         icon: "size-8 rounded-sm border bg-muted [&_svg:not([class*='size-'])]:size-4",
-        image: "size-10 overflow-hidden rounded-sm [&_img]:size-full [&_img]:object-cover",
-      },
-    },
-    defaultVariants: { variant: "default" },
-  },
+        image: "size-10 overflow-hidden rounded-sm [&_img]:size-full [&_img]:object-cover" } },
+    defaultVariants: { variant: "default" } },
 );
 
 /**
@@ -56,7 +51,7 @@ const itemMediaVariants = variants(
  * rows that navigate, use `asChild` on `Item` to make the row the link.
  */
 export function Item(props: Part & { variant?: "default" | "outline" | "muted"; size?: "default" | "sm"; asChild?: boolean }): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "variant", "size", "asChild", "children"]);
+  const [local, rest] = split(props, ["class", "variant", "size", "asChild", "children"]);
   const variant = () => local.variant ?? "default";
   const size = () => local.size ?? "default";
 
@@ -64,8 +59,7 @@ export function Item(props: Part & { variant?: "default" | "outline" | "muted"; 
     "data-slot": "item",
     "data-variant": variant(),
     "data-size": size(),
-    class: itemVariants({ variant: variant(), size: size(), class: local.class }),
-  });
+    class: itemVariants({ variant: variant(), size: size(), class: local.class }) });
 
   return props.asChild
     ? asChild(() => local.children ?? null, attributes)
@@ -78,7 +72,7 @@ export function Item(props: Part & { variant?: "default" | "outline" | "muted"; 
 
 /** The list container. */
 export function ItemGroup(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       role="list"
@@ -91,7 +85,7 @@ export function ItemGroup(props: Part): JSX.Element {
 
 /** A rule between two items. */
 export function ItemSeparator(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <Separator
       data-slot="item-separator"
@@ -104,7 +98,7 @@ export function ItemSeparator(props: Part): JSX.Element {
 
 /** Leading icon, avatar or thumbnail. */
 export function ItemMedia(props: Part & { variant?: "default" | "icon" | "image" }): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "variant"]);
+  const [local, rest] = split(props, ["class", "variant"]);
   return (
     <div
       data-slot="item-media"
@@ -117,7 +111,7 @@ export function ItemMedia(props: Part & { variant?: "default" | "icon" | "image"
 
 /** The text column. A second `ItemContent` in the same row collapses, so a meta block can follow. */
 export function ItemContent(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="item-content"
@@ -129,7 +123,7 @@ export function ItemContent(props: Part): JSX.Element {
 
 /** A full-width row for a title and its actions. */
 export function ItemHeader(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="item-header"
@@ -141,7 +135,7 @@ export function ItemHeader(props: Part): JSX.Element {
 
 /** A full-width row for secondary detail under the title. */
 export function ItemFooter(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="item-footer"
@@ -152,7 +146,7 @@ export function ItemFooter(props: Part): JSX.Element {
 }
 
 export function ItemTitle(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="item-title"
@@ -163,7 +157,7 @@ export function ItemTitle(props: Part): JSX.Element {
 }
 
 export function ItemDescription(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <p
       data-slot="item-description"
@@ -178,7 +172,7 @@ export function ItemDescription(props: Part): JSX.Element {
 }
 
 export function ItemActions(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div data-slot="item-actions" class={cn("flex items-center gap-2", local.class)} {...rest} />
   );

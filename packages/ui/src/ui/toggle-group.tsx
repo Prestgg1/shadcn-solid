@@ -1,4 +1,6 @@
-import { type JSX, createContext, createMemo, createSignal, useContext, splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { createContext, createMemo, createSignal, useContext } from "solid-js";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 import { Toggle, type ToggleProps, type ToggleSize, type ToggleVariant } from "./toggle";
@@ -66,7 +68,7 @@ export function asToggleValue(value: ToggleValue | undefined): string[] {
  * between items, which is what `Toolbar` here is for.
  */
 export function ToggleGroup(props: ToggleGroupProps): JSX.Element {
-  const [local, rest] = splitProps(props as ToggleGroupBaseProps, ["class", "variant", "size", "single"]);
+  const [local, rest] = split(props as ToggleGroupBaseProps, ["class", "variant", "size", "single"]);
 
   const initial = (): string[] => asToggleValue((props as { value?: ToggleValue }).value);
 
@@ -101,11 +103,12 @@ export function ToggleGroup(props: ToggleGroupProps): JSX.Element {
     variant: () => local.variant ?? "default",
     size: () => local.size ?? "default",
     pressed: selected,
-    onToggle,
-  };
+    onToggle };
 
+  // Solid 2 removed `Context.Provider`: the context object is itself the
+  // provider component and takes the value as a prop.
   return (
-    <ToggleGroupContext.Provider value={context}>
+    <ToggleGroupContext value={context}>
       <div
         data-slot="toggle-group"
         role="group"
@@ -114,7 +117,7 @@ export function ToggleGroup(props: ToggleGroupProps): JSX.Element {
         class={cn("group/toggle-group flex w-fit items-center rounded-md", local.class)}
         {...rest}
       />
-    </ToggleGroupContext.Provider>
+    </ToggleGroupContext>
   );
 }
 

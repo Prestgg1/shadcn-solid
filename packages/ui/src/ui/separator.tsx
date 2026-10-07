@@ -1,5 +1,6 @@
-import type { JSX } from "solid-js";
-import { Show, splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { Show } from "solid-js";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 
@@ -26,7 +27,7 @@ export interface SeparatorProps {
  * ```
  */
 export function Separator(props: SeparatorProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "orientation", "decorative"]);
+  const [local, rest] = split(props, ["class", "orientation", "decorative"]);
   const decorative = () => local.decorative ?? true;
   const orientation = () => local.orientation ?? "horizontal";
 

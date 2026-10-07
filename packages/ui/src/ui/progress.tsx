@@ -1,5 +1,5 @@
-import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 
@@ -29,7 +29,7 @@ function clamp(value: number | null | undefined): number {
  * than an unchanging number.
  */
 export function Progress(props: ProgressProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "value"]);
+  const [local, rest] = split(props, ["class", "value"]);
   const value = () => local.value ?? null;
   const percent = () => clamp(value());
 
@@ -54,8 +54,7 @@ export function Progress(props: ProgressProps): JSX.Element {
         style={{
           transform:
             value() === null ? "translateX(-100%)" : `translateX(-${100 - percent()}%)`,
-          width: value() === null ? "100%" : `${percent()}%`,
-        }}
+          width: value() === null ? "100%" : `${percent()}%` }}
       />
     </div>
   );

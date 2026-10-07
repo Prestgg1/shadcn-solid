@@ -1,5 +1,5 @@
-import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 
@@ -25,7 +25,7 @@ export interface CardPartProps {
  * ```
  */
 export function Card(props: CardPartProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="card"
@@ -42,7 +42,7 @@ export function Card(props: CardPartProps): JSX.Element {
  * an action button aligned to the top right without absolute positioning.
  */
 export function CardHeader(props: CardPartProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="card-header"
@@ -56,7 +56,7 @@ export function CardHeader(props: CardPartProps): JSX.Element {
 }
 
 export function CardTitle(props: CardPartProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="card-title"
@@ -67,7 +67,7 @@ export function CardTitle(props: CardPartProps): JSX.Element {
 }
 
 export function CardDescription(props: CardPartProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="card-description"
@@ -79,7 +79,7 @@ export function CardDescription(props: CardPartProps): JSX.Element {
 
 /** Top-right slot for a single control: a menu, a button, a badge. */
 export function CardAction(props: CardPartProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="card-action"
@@ -90,14 +90,14 @@ export function CardAction(props: CardPartProps): JSX.Element {
 }
 
 export function CardContent(props: CardPartProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div data-slot="card-content" class={cn("px-6", local.class)} {...rest} />
   );
 }
 
 export function CardFooter(props: CardPartProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="card-footer"

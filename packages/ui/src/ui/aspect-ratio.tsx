@@ -1,5 +1,5 @@
-import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 export interface AspectRatioProps {
   /** Width ÷ height. `16/9`, `1`, `2/3`. */
@@ -22,7 +22,7 @@ export interface AspectRatioProps {
  * ```
  */
 export function AspectRatio(props: AspectRatioProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["ratio", "style"]);
+  const [local, rest] = split(props, ["ratio", "style"]);
 
   return (
     <div

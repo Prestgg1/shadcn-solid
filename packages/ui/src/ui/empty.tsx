@@ -1,5 +1,5 @@
-import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 import { variants } from "~/lib/variants";
@@ -26,7 +26,7 @@ type Part = { class?: string; children?: JSX.Element; [key: string]: unknown };
  * reason and the way out belong.
  */
 export function Empty(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="empty"
@@ -40,7 +40,7 @@ export function Empty(props: Part): JSX.Element {
 }
 
 export function EmptyHeader(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="empty-header"
@@ -56,16 +56,13 @@ const emptyMediaVariants = variants(
     variants: {
       variant: {
         default: "bg-transparent",
-        icon: "flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground [&_svg:not([class*='size-'])]:size-6",
-      },
-    },
-    defaultVariants: { variant: "default" },
-  },
+        icon: "flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground [&_svg:not([class*='size-'])]:size-6" } },
+    defaultVariants: { variant: "default" } },
 );
 
 /** The illustration or icon above the message. */
 export function EmptyMedia(props: Part & { variant?: "default" | "icon" }): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "variant"]);
+  const [local, rest] = split(props, ["class", "variant"]);
   return (
     <div
       data-slot="empty-icon"
@@ -77,7 +74,7 @@ export function EmptyMedia(props: Part & { variant?: "default" | "icon" }): JSX.
 }
 
 export function EmptyTitle(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="empty-title"
@@ -88,7 +85,7 @@ export function EmptyTitle(props: Part): JSX.Element {
 }
 
 export function EmptyDescription(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <p
       data-slot="empty-description"
@@ -100,7 +97,7 @@ export function EmptyDescription(props: Part): JSX.Element {
 
 /** The way out of the empty state: a button, a link, a filter reset. */
 export function EmptyContent(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="empty-content"

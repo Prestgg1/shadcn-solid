@@ -1,5 +1,5 @@
-import type { ComponentProps, JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX, ComponentProps } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 
@@ -24,7 +24,7 @@ export interface ButtonGroupProps extends ComponentProps<"div"> {
  * move the ring, which only reads correctly on adjacent form controls.
  */
 export function ButtonGroup(props: ButtonGroupProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "orientation"]);
+  const [local, rest] = split(props, ["class", "orientation"]);
   const orientation = () => local.orientation ?? "horizontal";
   const vertical = () => orientation() === "vertical";
 

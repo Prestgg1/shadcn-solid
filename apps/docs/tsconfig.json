@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "jsx": "preserve",
+    "jsxImportSource": "@solidjs/web",
+    "paths": { "~/*": ["./src/*"] }
+  },
+  "include": ["src"]
+}

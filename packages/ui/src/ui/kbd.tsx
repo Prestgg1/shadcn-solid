@@ -1,5 +1,5 @@
-import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 
@@ -17,7 +17,7 @@ type Part = { class?: string; children?: JSX.Element; [key: string]: unknown };
  * tooltip's own surface rather than punching a hole in it.
  */
 export function Kbd(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <kbd
       data-slot="kbd"
@@ -34,7 +34,7 @@ export function Kbd(props: Part): JSX.Element {
 
 /** Several keys that are pressed together. */
 export function KbdGroup(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <span data-slot="kbd-group" class={cn("inline-flex items-center gap-1", local.class)} {...rest} />
   );

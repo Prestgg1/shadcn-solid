@@ -1,19 +1,31 @@
-import type { JSX, ValidComponent } from "solid-js";
-import { splitProps } from "solid-js";
-import { Dynamic } from "solid-js/web";
+import { type Element, type ValidComponent } from "solid-js";
+import { dynamic } from "@solidjs/web";
 
 /**
- * Render `as` (default `"div"`), forwarding everything else.
+ * Render `as`, forwarding everything else.
  *
- * This is Solid's answer to Kobalte's `Polymorphic`, kept here so no
- * headless primitive has to be installed for it. Reach for `asChild` first —
- * this component is for cases where the caller wants the component to choose
- * the element itself.
+ * Solid's answer to Kobalte's `Polymorphic`, kept here so no headless
+ * primitive has to be installed for it.
+ *
+ * Prefer `asChild` when the caller supplies the element. Use this when the
+ * *component* should choose the tag — which is also the only form whose
+ * attributes stay reactive, since it goes through the JSX compiler rather
+ * than through a DOM mutation.
+ *
+ * ```tsx
+ * <Polymorphic as="a" href="/docs">Docs</Polymorphic>
+ * ```
  */
 export function Polymorphic(props: {
   as?: ValidComponent;
   [key: string]: unknown;
-}): JSX.Element {
-  const [local, rest] = splitProps(props, ["as"]);
-  return <Dynamic component={local.as ?? "div"} {...rest} />;
+}): Element {
+  const Element_ = dynamic(() => props.as ?? "div");
+  return (
+    <Element_
+      {...(Object.fromEntries(
+        Object.entries(props).filter(([key]) => key !== "as"),
+      ) as Record<string, unknown>)}
+    />
+  );
 }

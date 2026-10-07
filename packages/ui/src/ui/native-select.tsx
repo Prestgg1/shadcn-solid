@@ -1,4 +1,6 @@
-import { For, type JSX, splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { For } from "solid-js";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 
@@ -53,7 +55,7 @@ function ChevronDown(): JSX.Element {
  * native picker is genuinely better on the device — mobile, in particular.
  */
 export function NativeSelect(props: NativeSelectProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "size", "children"]);
+  const [local, rest] = split(props, ["class", "size", "children"]);
 
   return (
     <div
@@ -83,7 +85,7 @@ export function NativeSelect(props: NativeSelectProps): JSX.Element {
 }
 
 export function NativeSelectOption(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <option
       data-slot="native-select-option"
@@ -94,7 +96,7 @@ export function NativeSelectOption(props: Part): JSX.Element {
 }
 
 export function NativeSelectOptGroup(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return <optgroup data-slot="native-select-optgroup" class={local.class} {...rest} />;
 }
 

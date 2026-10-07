@@ -1,7 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { render } from "@solidjs/testing-library";
 
-import { h } from "../test/h";
 import { Button, buttonVariants } from "./button";
 
 describe("buttonVariants", () => {
@@ -29,7 +28,7 @@ describe("buttonVariants", () => {
 
 describe("Button", () => {
   test("renders a button with slot and variant attributes", () => {
-    const { getByRole } = render(() => h(Button, { children: "Save" }));
+    const { getByRole } = render(() => <Button>Save</Button>);
     const button = getByRole("button");
 
     expect(button.getAttribute("data-slot")).toBe("button");
@@ -39,7 +38,11 @@ describe("Button", () => {
   });
 
   test("reflects variant and size", () => {
-    const { getByRole } = render(() => h(Button, { variant: "outline", size: "sm" }));
+    const { getByRole } = render(() => (
+    <Button variant="outline" size="sm">
+      Cancel
+    </Button>
+  ));
     const button = getByRole("button");
 
     expect(button.getAttribute("data-variant")).toBe("outline");
@@ -48,19 +51,19 @@ describe("Button", () => {
   });
 
   test("is disabled by the native attribute", () => {
-    const { getByRole } = render(() => h(Button, { disabled: true }));
+    const { getByRole } = render(() => <Button disabled>Save</Button>);
     expect(getByRole("button").hasAttribute("disabled")).toBe(true);
   });
 
   test("calls onClick", () => {
     let clicks = 0;
-    const { getByRole } = render(() => h(Button, { onClick: () => (clicks += 1) }));
+    const { getByRole } = render(() => <Button onClick={() => (clicks += 1)}>Save</Button>);
     getByRole("button").click();
     expect(clicks).toBe(1);
   });
 
   test("forwards arbitrary attributes", () => {
-    const { getByRole } = render(() => h(Button, { "aria-label": "Settings" }));
+    const { getByRole } = render(() => <Button aria-label="Settings" />);
     expect(getByRole("button").getAttribute("aria-label")).toBe("Settings");
   });
 });

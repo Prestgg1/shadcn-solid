@@ -1,5 +1,5 @@
-import type { ComponentProps, JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX, ComponentProps } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 
@@ -17,7 +17,7 @@ export interface InputProps extends ComponentProps<"input"> {}
  * the two together along with the error message.
  */
 export function Input(props: InputProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "type"]);
+  const [local, rest] = split(props, ["class", "type"]);
 
   return (
     <input

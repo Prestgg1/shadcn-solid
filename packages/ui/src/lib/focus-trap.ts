@@ -1,4 +1,4 @@
-import { createEffect, onCleanup } from "solid-js";
+import { createEffect } from "solid-js";
 
 /**
  * Selector for everything that can hold keyboard focus. `[tabindex="-1"]`
@@ -151,23 +151,36 @@ const target =
     }
   };
 
-  document.addEventListener("keydown", onKeyDown, true);
-  document.addEventListener("focusin", onFocusIn, true);
-
   const restore = () => {
     if (!previous || !previous.isConnected) return;
     previous.focus({ preventScroll: true });
   };
 
-  createEffect(() => {
-    if (enabled()) focus();
-  });
+  // Two-phase effect: `enabled()` is tracked in the compute phase, and the
+  // focus move happens in the apply phase. Solid 1 ran both in one pass.
+  //
+  // The listeners are installed here and *not* through `onCleanup`: in Solid
+  // 2 a cleanup registered inside an effect's apply phase does not run when
+  // the root is disposed. The value the apply phase returns is the teardown,
+  // and that is what Solid actually calls.
+  createEffect(
+    () => enabled(),
+    (active) => {
+      // The apply phase runs on every pass, including the first, so the gate
+      // lives here rather than in the compute.
+      if (!active) return;
 
-  onCleanup(() => {
-    document.removeEventListener("keydown", onKeyDown, true);
-    document.removeEventListener("focusin", onFocusIn, true);
-    restore();
-  });
+      document.addEventListener("keydown", onKeyDown, true);
+      document.addEventListener("focusin", onFocusIn, true);
+      focus();
+
+      return () => {
+        document.removeEventListener("keydown", onKeyDown, true);
+        document.removeEventListener("focusin", onFocusIn, true);
+        restore();
+      };
+    },
+  );
 
   return { restore, focus };
 }

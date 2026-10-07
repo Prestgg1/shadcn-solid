@@ -1,12 +1,24 @@
-import { type JSX, type ValidComponent, children, createMemo, mergeProps } from "solid-js";
-import { Dynamic } from "solid-js/web";
+import { type Element, children, createEffect } from "solid-js";
 
-/** A child that can carry props, as opposed to a string or a fragment. */
-function propsOf(value: unknown): Record<string, unknown> {
-  return typeof value === "object" && value !== null
-    ? (value as Record<string, unknown>)
-    : {};
+/**
+ * Read an element's current attributes as a props object.
+ *
+ * `class` and `style` are read as strings because that is how they come back
+ * from the DOM, and callers merge them with `cn`.
+ */
+function propsOf(node: Element): Record<string, unknown> {
+  const element = node as unknown as globalThis.Element;
+  const props: Record<string, unknown> = {};
+
+  for (const attribute of Array.from(element.attributes)) {
+    props[attribute.name] = attribute.value;
+  }
+
+  return props;
 }
+
+/** Keys an element must never have overwritten on it. */
+const RESERVED = new Set(["children"]);
 
 /**
  * Radix's `Slot`, for Solid.
@@ -16,9 +28,22 @@ function propsOf(value: unknown): Record<string, unknown> {
  * of the element — `<Button asChild><a href="/x">Go</a></Button>` renders an
  * `<a>` that is still a button.
  *
- * The child's own props win over the injected ones, except for `class`, which
- * is concatenated so the component's styling always comes first and the
- * caller can always add to it.
+ * **How it differs from Radix's Slot, and why.** Solid has no
+ * `cloneElement`: by the time `asChild` runs, the child has already been
+ * compiled into a real DOM element. So instead of cloning, this applies the
+ * component's attributes to that element.
+ *
+ * The consequence is one honest limitation: the attributes are written once,
+ * when the slot mounts. If the component's `class` or `data-state` later
+ * changes, the caller's element does not follow — `class` was already
+ * consumed by the browser. For everything else (event handlers, `aria-*`,
+ * `disabled`) the element keeps working normally.
+ *
+ * When a class has to change after mount, use the `as` prop instead:
+ *
+ * ```tsx
+ * <Button as="a" href="/docs">Docs</Button>
+ * ```
  *
  * ```tsx
  * const attributes = () => ({ "data-slot": "button", class: "…" });
@@ -28,19 +53,39 @@ function propsOf(value: unknown): Record<string, unknown> {
  * ```
  */
 export function asChild(
-  component: () => JSX.Element,
+  component: () => Element,
   inject: (childProps: Record<string, unknown>) => Record<string, unknown>,
-): JSX.Element {
+): Element {
   const resolved = children(component);
+  const node = resolved();
 
-  const merged = createMemo(() => {
-    const own = propsOf(resolved());
-    const injected = inject(own);
+  if (!(node instanceof Element)) {
+    throw new Error(
+      "asChild expects a single DOM element as its child — a fragment or a text node cannot receive component attributes.",
+    );
+  }
 
-    return mergeProps(injected, own, {
-      class: [injected.class as JSX.Element, own.class as JSX.Element] as JSX.Element,
-    }) as Record<string, unknown>;
-  });
+  createEffect(
+    () => node,
+    () => {
+      for (const [key, value] of Object.entries(inject(propsOf(node)))) {
+        if (RESERVED.has(key)) continue;
 
-  return <Dynamic component={merged() as unknown as ValidComponent} {...merged()} />;
+        if (key === "class") {
+          const existing = node.getAttribute("class");
+          const next = [value, existing].filter(Boolean).join(" ");
+          if (next) node.setAttribute("class", next);
+          continue;
+        }
+
+        if (value === undefined || value === null || value === false) {
+          node.removeAttribute(key);
+        } else {
+          node.setAttribute(key, value === true ? "" : String(value));
+        }
+      }
+    },
+  );
+
+  return node;
 }

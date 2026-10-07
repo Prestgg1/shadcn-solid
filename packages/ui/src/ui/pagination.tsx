@@ -1,5 +1,5 @@
-import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 import { buttonVariants, type ButtonSize } from "./button";
@@ -23,7 +23,7 @@ type Part = { class?: string; children?: JSX.Element; [key: string]: unknown };
  * tab, middle-clicked and crawled. The active page carries `aria-current`.
  */
 export function Pagination(props: Part & { "aria-label"?: string }): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "aria-label"]);
+  const [local, rest] = split(props, ["class", "aria-label"]);
   return (
     <nav
       role="navigation"
@@ -36,7 +36,7 @@ export function Pagination(props: Part & { "aria-label"?: string }): JSX.Element
 }
 
 export function PaginationContent(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <ul
       data-slot="pagination-content"
@@ -47,7 +47,7 @@ export function PaginationContent(props: Part): JSX.Element {
 }
 
 export function PaginationItem(props: Part): JSX.Element {
-  const [local] = splitProps(props, ["class"]);
+  const [local] = split(props, ["class"]);
   return <li data-slot="pagination-item" class={local.class} />;
 }
 
@@ -55,7 +55,7 @@ export function PaginationItem(props: Part): JSX.Element {
 export function PaginationLink(
   props: Part & { isActive?: boolean; size?: ButtonSize },
 ): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "isActive", "size"]);
+  const [local, rest] = split(props, ["class", "isActive", "size"]);
 
   return (
     <a
@@ -66,8 +66,7 @@ export function PaginationLink(
         buttonVariants({
           variant: local.isActive ? "outline" : "ghost",
           size: local.size ?? "icon",
-          class: local.class,
-        }),
+          class: local.class }),
       )}
       {...rest}
     />
@@ -75,7 +74,7 @@ export function PaginationLink(
 }
 
 export function PaginationPrevious(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "children"]);
+  const [local, rest] = split(props, ["class", "children"]);
   return (
     <a
       aria-label="Go to previous page"
@@ -90,7 +89,7 @@ export function PaginationPrevious(props: Part): JSX.Element {
 }
 
 export function PaginationNext(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "children"]);
+  const [local, rest] = split(props, ["class", "children"]);
   return (
     <a
       aria-label="Go to next page"
@@ -111,7 +110,7 @@ export function PaginationNext(props: Part): JSX.Element {
  * announced; the surrounding `<nav>` already carries the context.
  */
 export function PaginationEllipsis(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <span
       aria-hidden="true"

@@ -1,5 +1,9 @@
 # @prestgg/solid-ui — full component reference
 
+# split
+
+Splits props into the keys a component handles and the rest it forwards. Solid 2 dropped `splitProps`; `omit` alone does not return a tuple.
+
 # cn
 
 Class-name merger built on clsx and tailwind-merge. Every component uses it.

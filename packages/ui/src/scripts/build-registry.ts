@@ -27,6 +27,12 @@ const outDir = resolve(packageRoot, "registry");
 
 const HOMEPAGE = "https://shadcn-solid.dev";
 
+/**
+ * The header an already-marked file carries: one line naming the registry
+ * item, which is all `remove` and `diff` need.
+ */
+const MARKER_LINE = /^\s*(?:\/\/|\/\*)\s*registry:/m;
+
 /** Prefix every copied file with the item's registry type, shadcn-style. */
 function basePathFor(item: RegistryItem): string {
   const segment = item.type.replace("registry:", "");
@@ -117,6 +123,18 @@ async function main() {
       source.files.map((file) => readFileOrFail(file.path, source.name)),
     );
     built.push(withContents(source, contents));
+  }
+
+  // Every copied file carries its registry item in the first line. That is
+  // what lets `solid-ui remove` and `solid-ui diff` recognise their own
+  // output in a tree the user has since edited, without a manifest.
+  for (const item of built) {
+    for (const file of item.files) {
+      if (file.content === undefined) continue;
+      if (MARKER_LINE.test(file.content)) continue;
+      const comment = file.path.endsWith(".css") ? "/*" : "//";
+      file.content = `${comment} registry:${item.name}\n${file.content}`;
+    }
   }
 
   const index: RegistryIndex = { name: "solid-ui", homepage: HOMEPAGE, items: built };

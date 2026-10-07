@@ -11,7 +11,7 @@ import {
   type Placement,
 } from "@floating-ui/dom";
 import type { Accessor } from "solid-js";
-import { createEffect, createSignal, onCleanup } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 import { createPresence } from "./presence";
 
 export type { Placement };
@@ -170,19 +170,26 @@ export function floatingPanel(
     stopTracking = autoUpdate(anchor, panel, update);
   };
 
-  createEffect(() => {
-    // Reading both signals re-runs this across a full open/close cycle,
-    // which is when a stale measurement would otherwise show up.
-    presence.mounted();
-    if (!open()) {
-      stopTracking?.();
-      stopTracking = undefined;
-      return;
-    }
-    track();
-  });
+  // Tracking restarts on every full open/close cycle, which is when a stale
+  // measurement would otherwise show up. Both branches are side effects, so
+  // they live in the apply phase and the compute phase only reads.
+  createEffect(
+    () => presence.mounted() && open(),
+    (shouldTrack) => {
+      if (!shouldTrack) {
+        stopTracking?.();
+        stopTracking = undefined;
+        return;
+      }
+      track();
 
-  onCleanup(() => stopTracking?.());
+      // The returned teardown stops `autoUpdate` when the panel closes or the
+      // owning component is disposed — Solid 2 runs the value an effect's
+      // apply phase returns, and ignores `onCleanup` set inside it.
+      return () => stopTracking?.();
+    },
+  );
+
 
   const style = (): Record<string, string> => ({
     position: "fixed",

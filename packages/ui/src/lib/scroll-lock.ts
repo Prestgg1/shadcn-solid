@@ -1,4 +1,4 @@
-import { createEffect, onCleanup } from "solid-js";
+import { createEffect } from "solid-js";
 
 interface LockRecord {
   /** How many overlays currently hold a lock on this element. */
@@ -23,9 +23,10 @@ const locks = new WeakMap<HTMLElement, LockRecord>();
  * once the last holder lets go.
  */
 export function scrollLock(element: HTMLElement | null, enabled: () => boolean): void {
-  createEffect(() => {
-    if (!element || !enabled()) return;
-    if (typeof window === "undefined") return;
+  createEffect(
+    () => (element ? enabled() : false) && typeof window !== "undefined",
+    (shouldLock) => {
+      if (!shouldLock || !element || typeof window === "undefined") return;
 
     const existing = locks.get(element);
 
@@ -47,17 +48,20 @@ export function scrollLock(element: HTMLElement | null, enabled: () => boolean):
       if (width > 0) element.style.paddingRight = `${currentPadding + width}px`;
     }
 
-    // Every holder releases its own lock, whichever branch it took above.
-    onCleanup(() => {
-      const record = locks.get(element);
-      if (!record) return;
+      // Every holder releases its own lock, whichever branch it took above.
+      // Returned rather than registered with `onCleanup`: in Solid 2 a
+      // cleanup set inside an effect's apply phase never runs on dispose.
+      return () => {
+        const record = locks.get(element);
+        if (!record) return;
 
-      record.count -= 1;
-      if (record.count > 0) return;
+        record.count -= 1;
+        if (record.count > 0) return;
 
-      locks.delete(element);
-      element.style.overflow = record.overflow;
-      element.style.paddingRight = record.paddingRight;
-    });
-  });
+        locks.delete(element);
+        element.style.overflow = record.overflow;
+        element.style.paddingRight = record.paddingRight;
+      };
+    },
+  );
 }

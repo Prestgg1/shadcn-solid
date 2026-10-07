@@ -1,5 +1,5 @@
-import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 
@@ -31,7 +31,7 @@ export interface SwitchProps {
  * a gradient whose position is driven by `checked`.
  */
 export function Switch(props: SwitchProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "checked", "onChange", "defaultChecked"]);
+  const [local, rest] = split(props, ["class", "checked", "onChange", "defaultChecked"]);
 
   const isChecked = () => local.checked ?? local.defaultChecked ?? false;
 
@@ -40,7 +40,10 @@ export function Switch(props: SwitchProps): JSX.Element {
       type="checkbox"
       role="switch"
       data-slot="switch"
+      {...rest}
       checked={isChecked()}
+      // After the spread: `rest` may still carry a raw onChange, and ours
+      // has to win — it is the one that unwraps the boolean.
       onChange={(event) => local.onChange?.(event.currentTarget.checked)}
       class={cn(
         "peer inline-flex h-[1.15rem] w-8 shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none",
@@ -60,9 +63,7 @@ export function Switch(props: SwitchProps): JSX.Element {
         "background-size":
           isChecked() ? "3px 7px, 3px 7px" : "3px 7px, 3px 7px",
         "background-repeat": "no-repeat",
-        "transition": "background-position 120ms cubic-bezier(0.2, 0.8, 0.2, 1)",
-      }}
-      {...rest}
+        "transition": "background-position 120ms cubic-bezier(0.2, 0.8, 0.2, 1)" }}
     />
   );
 }

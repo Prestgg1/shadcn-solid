@@ -1,5 +1,5 @@
-import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 import { variants } from "~/lib/variants";
@@ -11,11 +11,8 @@ const alertVariants = variants(
       variant: {
         default: "bg-card text-card-foreground",
         destructive:
-          "bg-card text-destructive *:data-[slot=alert-description]:text-destructive/90 [&>svg]:text-current",
-      },
-    },
-    defaultVariants: { variant: "default" },
-  },
+          "bg-card text-destructive *:data-[slot=alert-description]:text-destructive/90 [&>svg]:text-current" } },
+    defaultVariants: { variant: "default" } },
 );
 
 type Part = { class?: string; children?: JSX.Element; [key: string]: unknown };
@@ -35,7 +32,7 @@ type Part = { class?: string; children?: JSX.Element; [key: string]: unknown };
  * error — `role="alert"` interrupts what a screen reader is saying.
  */
 export function Alert(props: Part & { variant?: "default" | "destructive" }): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "variant"]);
+  const [local, rest] = split(props, ["class", "variant"]);
   return (
     <div
       data-slot="alert"
@@ -47,7 +44,7 @@ export function Alert(props: Part & { variant?: "default" | "destructive" }): JS
 }
 
 export function AlertTitle(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="alert-title"
@@ -58,7 +55,7 @@ export function AlertTitle(props: Part): JSX.Element {
 }
 
 export function AlertDescription(props: Part): JSX.Element {
-  const [local, rest] = splitProps(props, ["class"]);
+  const [local, rest] = split(props, ["class"]);
   return (
     <div
       data-slot="alert-description"

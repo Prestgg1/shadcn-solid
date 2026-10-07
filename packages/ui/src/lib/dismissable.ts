@@ -1,4 +1,4 @@
-import { createEffect, onCleanup } from "solid-js";
+import { createEffect } from "solid-js";
 
 export interface DismissableOptions {
   /** Inside this element counts as "inside", so content can own its own stops. */
@@ -35,11 +35,14 @@ export function dismissable(
   close: () => void,
   options: DismissableOptions,
 ): void {
-  createEffect(() => {
-    if (!enabled()) return;
-    if (typeof document === "undefined") return;
+  createEffect(
+    () => enabled() && typeof document !== "undefined",
+    (active) => {
+      // The apply phase runs on every pass, including the first, so the gate
+      // belongs here rather than in the compute.
+      if (!active || typeof document === "undefined") return;
 
-    const { inside, outside, pointerDown = true, escape = true, stopEscape = true } = options;
+      const { inside, outside, pointerDown = true, escape = true, stopEscape = true } = options;
 
     const onPointerDown = (event: PointerEvent) => {
       const target = event.target;
@@ -58,12 +61,15 @@ export function dismissable(
       close();
     };
 
-    if (pointerDown) document.addEventListener("pointerdown", onPointerDown, true);
-    if (escape) document.addEventListener("keydown", onKeyDown, true);
+      if (pointerDown) document.addEventListener("pointerdown", onPointerDown, true);
+      if (escape) document.addEventListener("keydown", onKeyDown, true);
 
-    onCleanup(() => {
-      document.removeEventListener("pointerdown", onPointerDown, true);
-      document.removeEventListener("keydown", onKeyDown, true);
-    });
-  });
+      // Returned, not `onCleanup`-registered: Solid 2 does not run a cleanup
+      // set inside an effect's apply phase when the root is disposed.
+      return () => {
+        document.removeEventListener("pointerdown", onPointerDown, true);
+        document.removeEventListener("keydown", onKeyDown, true);
+      };
+    },
+  );
 }

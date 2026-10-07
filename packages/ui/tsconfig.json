@@ -1,19 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "types": [
-      "bun"
-    ],
-    "paths": {
-      "~/*": [
-        "./src/*"
-      ]
-    },
-    "jsx": "preserve"
+    "types": ["bun"],
+    "jsx": "preserve",
+    "jsxImportSource": "@solidjs/web",
+    "paths": { "~/*": ["./src/*"] }
   },
-  "include": [
-    "src",
-    "scripts",
-    "plugins"
-  ]
+  "include": ["src", "scripts"]
 }

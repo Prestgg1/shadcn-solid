@@ -1,0 +1,31 @@
+{
+  "name": "@prestgg/solid-ui-docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "bun run ./scripts/copy-llms.ts && vite build",
+    "preview": "vite preview",
+    "setup": "bun ../../packages/cli/src/index.ts init -y && bun ../../packages/cli/src/index.ts add button card badge kbd separator --yes --silent"
+  },
+  "dependencies": {
+    "@prestgg/solid-jsx": "file:../../packages/solid-jsx",
+    "@solidjs/router": "2.0.0-next.35",
+    "@solidjs/web": "2.0.0-rc.13",
+    "solid-js": "2.0.0-rc.13",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.7.0"
+  },
+  "devDependencies": {
+    "@prestgg/solid-ui": "file:../../packages/ui",
+    "@prestgg/solid-ui-cli": "file:../../packages/cli",
+    "@solidjs/compiler": "2.0.0-rc.13",
+    "@solidjs/vite-plugin": "3.0.0-next.47",
+    "@types/bun": "^1.4.2",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vite": "^8.2.0",
+    "@tailwindcss/vite": "^4.3.3"
+  }
+}

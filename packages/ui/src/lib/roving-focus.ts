@@ -1,4 +1,4 @@
-import { createEffect, onCleanup } from "solid-js";
+import { createEffect } from "solid-js";
 
 /** Marker attribute every roving item must carry. */
 const ITEM = "[data-roving-item]";
@@ -119,28 +119,39 @@ export function rovingFocus(
     apply(target);
   };
 
-  container.addEventListener("keydown", onKeyDown);
-  container.addEventListener("focusin", onFocusIn);
-
   // Establish the single tab stop once items exist. Re-runs when the
   // container's children change, so a filtered menu keeps one tab stop.
-  createEffect(() => {
-    const list = items(container);
-    if (list.length === 0) return;
+  //
+  // The listeners go up in the effect and come down in the value it returns —
+  // `onCleanup` inside an effect's apply phase is not run on dispose in
+  // Solid 2.
+  createEffect(
+    () => items(container).length > 0,
+    (hasItems) => {
+      if (!hasItems) return;
 
-    const stillMounted = active && container.contains(active) && list.includes(active);
-    const next = stillMounted ? active! : (options.initial ?? list[0]!);
-    active = next;
-    apply(next);
-  });
+      container.addEventListener("keydown", onKeyDown);
+      container.addEventListener("focusin", onFocusIn);
+      const list = items(container);
+      if (list.length === 0) return;
 
-  onCleanup(() => {
-    container.removeEventListener("keydown", onKeyDown);
-    container.removeEventListener("focusin", onFocusIn);
-  });
+      // `active` is a mutable closure variable, so the narrowing has to
+      // happen through a local before it can be used as an element.
+      const current = active;
+      const stillMounted = current !== null && container.contains(current) && list.includes(current);
+      const next = stillMounted ? current : (options.initial ?? list[0]!);
+      active = next;
+      apply(next);
+
+      return () => {
+        container.removeEventListener("keydown", onKeyDown);
+        container.removeEventListener("focusin", onFocusIn);
+      };
+    },
+  );
 
   return {
     focusItem,
-    active: () => (active && container.contains(active) ? active : null),
+    active: () => (active !== null && container.contains(active) ? active : null),
   };
 }

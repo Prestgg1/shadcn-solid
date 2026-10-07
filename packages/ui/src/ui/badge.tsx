@@ -1,5 +1,5 @@
-import type { ComponentProps, JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX, ComponentProps } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { asChild } from "~/lib/slot";
 import { variants } from "~/lib/variants";
@@ -15,11 +15,8 @@ const badgeVariants = variants(
           "bg-destructive text-white focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/90",
         outline: "border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         ghost: "[a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 [a&]:hover:underline",
-      },
-    },
-    defaultVariants: { variant: "default" },
-  },
+        link: "text-primary underline-offset-4 [a&]:hover:underline" } },
+    defaultVariants: { variant: "default" } },
 );
 
 export type BadgeVariant =
@@ -45,12 +42,11 @@ export interface BadgeProps extends ComponentProps<"span"> {
  * ```
  */
 export function Badge(props: BadgeProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["asChild", "children"]);
+  const [local, rest] = split(props, ["asChild", "children"]);
   const attributes = () => ({
     "data-slot": "badge",
     "data-variant": props.variant ?? "default",
-    class: badgeVariants({ variant: props.variant, class: props.class }),
-  });
+    class: badgeVariants({ variant: props.variant, class: props.class }) });
 
   return props.asChild
     ? asChild(() => local.children ?? null, attributes)

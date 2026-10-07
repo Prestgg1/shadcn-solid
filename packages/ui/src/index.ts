@@ -13,8 +13,9 @@
 
 // --- primitives ---------------------------------------------------------
 export { cn, type ClassValue } from "./lib/cn";
+export { split, has } from "./lib/split";
 export { variants, type VariantSelection, type VariantsConfig, type VariantsFn } from "./lib/variants";
-export { Portal, useEscapeKey, type OverlayRootProps } from "./lib/portal";
+export { Portal, useEscapeKey } from "./lib/portal";
 export { createPresence, type Presence } from "./lib/presence";
 export {
   focusTrap,
@@ -37,3 +38,5 @@ export {
   type Placement,
 } from "./lib/floating";
 export { dismissable, type DismissableOptions } from "./lib/dismissable";
+export { asChild } from "./lib/slot";
+export { Polymorphic } from "./lib/polymorphic";

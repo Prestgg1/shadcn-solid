@@ -109,28 +109,33 @@ export function createPresence(when: Accessor<boolean>): Presence {
     setMounted(false);
   };
 
-  createEffect(() => {
-    if (when()) {
-      cancelExit?.();
-      cancelExit = undefined;
-      element = undefined;
-      setState("open");
-      setMounted(true);
-      return;
-    }
+  // `when` decides the branch; the DOM work belongs in the apply phase, so
+  // the compute pass stays free of side effects.
+  createEffect(
+    () => when(),
+    (visible) => {
+      if (visible) {
+        cancelExit?.();
+        cancelExit = undefined;
+        element = undefined;
+        setState("open");
+        setMounted(true);
+        return;
+      }
 
-    if (!mounted()) return;
+      if (!mounted()) return;
 
     setState("closed");
-    if (element) {
-      cancelExit?.();
-      cancelExit = afterAnimation(element, unmount);
-      return;
-    }
+      if (element) {
+        cancelExit?.();
+        cancelExit = afterAnimation(element, unmount);
+        return;
+      }
 
-    // Nothing registered a ref (or the caller has none): unmount promptly.
-    nextFrame(unmount);
-  });
+      // Nothing registered a ref (or the caller has none): unmount promptly.
+      nextFrame(unmount);
+    },
+  );
 
   onCleanup(() => cancelExit?.());
 

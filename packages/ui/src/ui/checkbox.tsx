@@ -1,5 +1,5 @@
-import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 
@@ -34,7 +34,7 @@ export interface CheckboxProps {
  * form's error state is all that is needed.
  */
 export function Checkbox(props: CheckboxProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "checked", "onChange", "defaultChecked"]);
+  const [local, rest] = split(props, ["class", "checked", "onChange", "defaultChecked"]);
 
   const isChecked = () => local.checked ?? local.defaultChecked ?? false;
 
@@ -43,7 +43,10 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
       type="checkbox"
       role="checkbox"
       data-slot="checkbox"
+      {...rest}
       checked={isChecked()}
+      // After the spread: `rest` may still carry a raw onChange, and ours
+      // has to win — it is the one that unwraps the boolean.
       onChange={(event) => local.onChange?.(event.currentTarget.checked)}
       class={cn(
         "peer size-4 shrink-0 rounded-[4px] border border-input shadow-xs transition-shadow outline-none",
@@ -59,7 +62,6 @@ export function Checkbox(props: CheckboxProps): JSX.Element {
         "appearance-none",
         local.class,
       )}
-      {...rest}
     />
   );
 }

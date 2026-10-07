@@ -1,5 +1,6 @@
-import type { JSX } from "solid-js";
-import { createEffect, createSignal, splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { createEffect, createSignal } from "solid-js";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 
@@ -34,7 +35,7 @@ export interface SliderProps {
  * split point tracks the value.
  */
 export function Slider(props: SliderProps): JSX.Element {
-  const [local, rest] = splitProps(props, [
+  const [local, rest] = split(props, [
     "class",
     "value",
     "defaultValue",
@@ -51,10 +52,12 @@ export function Slider(props: SliderProps): JSX.Element {
 
   const [position, setPosition] = createSignal(local.value ?? local.defaultValue ?? min());
 
-  createEffect(() => {
-    const next = local.value;
-    if (next !== undefined && next !== position()) setPosition(next);
-  });
+  createEffect(
+    () => local.value,
+    (next) => {
+      if (next !== undefined && next !== position()) setPosition(next);
+    },
+  );
 
   const percent = () => {
     const span = max() - min();
@@ -81,8 +84,7 @@ export function Slider(props: SliderProps): JSX.Element {
           "background-image":
             "linear-gradient(var(--primary), var(--primary)), linear-gradient(var(--muted), var(--muted))",
           "background-size": `${percent()}% 100%, 100% 100%`,
-          "background-repeat": "no-repeat",
-        }}
+          "background-repeat": "no-repeat" }}
       >
         <span
           data-slot="slider-thumb"

@@ -1,5 +1,5 @@
-import type { JSX } from "solid-js";
-import { splitProps } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { split } from "~/lib/split";
 
 import { cn } from "~/lib/cn";
 
@@ -23,7 +23,7 @@ export interface SpinnerProps {
  * announced without stealing focus.
  */
 export function Spinner(props: SpinnerProps): JSX.Element {
-  const [local, rest] = splitProps(props, ["class", "label"]);
+  const [local, rest] = split(props, ["class", "label"]);
 
   return (
     <svg
