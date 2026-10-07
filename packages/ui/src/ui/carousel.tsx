@@ -1,5 +1,5 @@
 import type { JSX } from "@solidjs/web";
-import { For, Show, createContext, createSignal, useContext } from "solid-js";
+import { For, createContext, createSignal, useContext } from "solid-js";
 
 import { cn } from "~/lib/cn";
 import { split } from "~/lib/split";

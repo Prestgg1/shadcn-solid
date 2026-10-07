@@ -2,7 +2,6 @@ import type { JSX } from "@solidjs/web";
 import { For, Show, createSignal, onCleanup } from "solid-js";
 
 import { cn } from "~/lib/cn";
-import { split } from "~/lib/split";
 
 /**
  * Toaster — a stack of transient messages, plus the `toast` function that

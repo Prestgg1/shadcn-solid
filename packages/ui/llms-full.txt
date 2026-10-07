@@ -208,6 +208,14 @@ A text input that filters a list of options, matching text as a case-insensitive
 
 A filterable command palette. The DOM is the list, so filtering cannot drift from what is shown.
 
+# menubar
+
+An application menu bar. One menu open at a time; arrows walk the bar when closed and the items when open.
+
+# sidebar
+
+A collapsible app shell. Collapses to a rail without losing the labels, and ⌘B toggles it.
+
 # carousel
 
 Slides with previous/next controls and dots. No drag engine — the state machine, not the gesture layer.

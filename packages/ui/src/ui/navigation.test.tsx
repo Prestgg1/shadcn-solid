@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import { fireEvent, render } from "@solidjs/testing-library";
-import { createSignal } from "solid-js";
 
 import { Toaster, toast } from "./sonner";
 import {
