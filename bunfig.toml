@@ -1,0 +1,8 @@
+# Running `bun test` from the repository root should behave like running it
+# inside a package. Each package keeps its own bunfig.toml; this one points
+# at the same preload so the root entry point is not the odd one out.
+[test]
+preload = [
+  "./packages/ui/src/test/setup.ts",
+  "./packages/ui/src/test/plugin.ts",
+]

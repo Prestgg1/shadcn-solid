@@ -9,12 +9,12 @@
     "apps/*"
   ],
   "scripts": {
-    "test": "bun test",
-    "typecheck": "bun run --filter='@prestgg/*' typecheck",
-    "lint": "oxlint packages",
-    "build": "bun run --filter='@prestgg/solid-ui' build && bun run --filter='@prestgg/solid-ui-cli' build && bun run --filter='@prestgg/solid-ui-docs' build",
+    "test": "bun test --conditions=browser",
+    "typecheck": "bun run --filter='@prestgg/*' --filter='!@prestgg/solid-ui-docs' typecheck",
+    "lint": "oxlint packages apps",
     "registry": "bun run --cwd packages/ui registry",
-    "cli": "bun run packages/cli/src/index.ts"
+    "build": "bun run --cwd packages/ui registry && bun run --cwd apps/docs build",
+    "check": "bun run lint && bun run typecheck && bun run test"
   },
   "devDependencies": {
     "@types/bun": "^1.4.2",
