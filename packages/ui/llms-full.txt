@@ -208,6 +208,18 @@ A text input that filters a list of options, matching text as a case-insensitive
 
 A filterable command palette. The DOM is the list, so filtering cannot drift from what is shown.
 
+# calendar
+
+A 42-cell month grid. Local Dates, never strings — parsing a date string is how a picker ends up a day off.
+
+# table-data
+
+A real table that sorts, filters, paginates and selects. Columns are data, so the header can sort them.
+
+# tree
+
+A flat, roving-tabindex tree. Collapsed branches leave the DOM entirely, so arrows cannot land on hidden rows.
+
 # menubar
 
 An application menu bar. One menu open at a time; arrows walk the bar when closed and the items when open.
