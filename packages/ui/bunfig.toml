@@ -1,0 +1,5 @@
+[test]
+# `--conditions=browser` is what makes `solid-js` resolve to the client
+# build. Without it `createEffect` is the server build's no-op and every
+# reactive test would pass vacuously.
+preload = ["./src/test/setup.ts"]

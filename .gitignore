@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.output/
+.turbo/
+*.tsbuildinfo
+.DS_Store
+
+# Generated registry — rebuilt with `bun run registry`
+packages/ui/registry.json
+packages/ui/registry/
+
+# Docs build artifacts
+apps/docs/.output/
+apps/docs/.vinxi/

@@ -1,0 +1,37 @@
+{
+  "name": "@prestgg/solid-ui-cli",
+  "version": "0.1.0",
+  "description": "The @prestgg/solid-ui CLI — copy shadcn/ui components into a SolidJS project.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "solid-ui": "./src/index.ts",
+    "shadcn-solid": "./src/index.ts"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "start": "bun run ./src/index.ts"
+  },
+  "dependencies": {
+    "commander": "^15.0.0",
+    "prompts": "^2.4.2"
+  },
+  "keywords": [
+    "shadcn",
+    "solidjs",
+    "cli",
+    "components",
+    "registry"
+  ],
+  "devDependencies": {
+    "@types/bun": "^1.4.2",
+    "@types/prompts": "^2.4.9"
+  }
+}

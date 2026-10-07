@@ -1,0 +1,41 @@
+# @prestgg/solid-ui — full component reference
+
+# cn
+
+Class-name merger built on clsx and tailwind-merge. Every component uses it.
+
+Dependencies: clsx, tailwind-merge
+
+# variants
+
+cva-compatible variant function, without the dependency.
+
+# presence
+
+Keeps a subtree mounted until its exit animation has played.
+
+# focus-trap
+
+Confines Tab to a container and restores focus when it closes.
+
+# scroll-lock
+
+Reference-counted body scroll lock for nested overlays.
+
+# roving-focus
+
+The roving-tabindex pattern for menus, tabs and toggle groups.
+
+# floating
+
+Positioning for popovers, menus and selects, via @floating-ui/dom.
+
+Dependencies: @floating-ui/dom
+
+# dismissable
+
+Close-on-outside-press and Escape, safe inside nested overlays.
+
+# portal
+
+Render into document.body, resolved lazily so SSR is safe.
