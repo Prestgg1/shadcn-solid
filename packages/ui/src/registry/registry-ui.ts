@@ -159,6 +159,24 @@ export const ui: RegistryItem[] = [
     registryDependencies: ["cn", "split"],
     files: [{ path: "ui/resizable.tsx", type: "ui", target: "resizable.tsx" }] },
 
+  // --- menus and pickers ------------------------------------------------
+  { name: "select", type: "registry:ui", title: "Select",
+    description: "A listbox in a floating panel. Arrows move the active option; Space commits it.",
+    registryDependencies: ["cn", "split", "floating", "dismissable", "portal"],
+    files: [{ path: "ui/select.tsx", type: "ui", target: "select.tsx" }] },
+  { name: "dropdown-menu", type: "registry:ui", title: "DropdownMenu",
+    description: "A menu of actions. One tab stop, arrows between items, Escape returns focus to the trigger.",
+    registryDependencies: ["cn", "split", "slot", "floating", "dismissable", "portal", "roving-focus"],
+    files: [{ path: "ui/dropdown-menu.tsx", type: "ui", target: "dropdown-menu.tsx" }] },
+  { name: "combobox", type: "registry:ui", title: "Combobox",
+    description: "A text input that filters a list of options, matching text as a case-insensitive substring.",
+    registryDependencies: ["cn", "split", "floating", "portal"],
+    files: [{ path: "ui/combobox.tsx", type: "ui", target: "combobox.tsx" }] },
+  { name: "command", type: "registry:ui", title: "Command",
+    description: "A filterable command palette. The DOM is the list, so filtering cannot drift from what is shown.",
+    registryDependencies: ["cn", "split", "slot"],
+    files: [{ path: "ui/command.tsx", type: "ui", target: "command.tsx" }] },
+
   // --- overlays ---------------------------------------------------------
   { name: "dialog", type: "registry:ui", title: "Dialog",
     description: "A modal window: trapped focus, a locked page behind, Escape and scrim dismissal.",

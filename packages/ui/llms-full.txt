@@ -192,6 +192,22 @@ A scrollable region with styled scrollbars, on native scrolling.
 
 Panels separated by a divider that drags, and resizes with the arrow keys.
 
+# select
+
+A listbox in a floating panel. Arrows move the active option; Space commits it.
+
+# dropdown-menu
+
+A menu of actions. One tab stop, arrows between items, Escape returns focus to the trigger.
+
+# combobox
+
+A text input that filters a list of options, matching text as a case-insensitive substring.
+
+# command
+
+A filterable command palette. The DOM is the list, so filtering cannot drift from what is shown.
+
 # dialog
 
 A modal window: trapped focus, a locked page behind, Escape and scrim dismissal.
