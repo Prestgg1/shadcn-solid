@@ -27,7 +27,9 @@ export interface RovingFocusHandle {
   active: () => HTMLElement | null;
 }
 
-function items(container: HTMLElement): HTMLElement[] {
+function items(container: HTMLElement | null): HTMLElement[] {
+  if (!container) return [];
+
   return Array.from(container.querySelectorAll<HTMLElement>(ITEM)).filter(
     (element) =>
       !element.hasAttribute("disabled") &&
@@ -45,16 +47,22 @@ function items(container: HTMLElement): HTMLElement[] {
  * keyboard" and "tab takes a hundred presses to cross the toolbar".
  */
 export function rovingFocus(
-  container: HTMLElement,
+  target: HTMLElement | (() => HTMLElement | null | undefined),
   options: RovingFocusOptions = {},
 ): RovingFocusHandle {
+  // The container usually arrives after this call: a component runs its body
+  // before the element its ref points at exists. Read it through a function
+  // so every use below resolves at the moment it is needed.
+  const container = (): HTMLElement | null =>
+    typeof target === "function" ? (target() ?? null) : target;
+
   const orientation = options.orientation ?? "both";
   const loop = options.loop ?? true;
 
   let active: HTMLElement | null = null;
 
   const apply = (element: HTMLElement) => {
-    for (const item of items(container)) {
+    for (const item of items(container())) {
       item.tabIndex = item === element ? 0 : -1;
     }
   };
@@ -67,7 +75,7 @@ export function rovingFocus(
   };
 
   const step = (from: HTMLElement, delta: number) => {
-    const list = items(container);
+    const list = items(container());
     if (list.length === 0) return;
 
     const index = list.indexOf(from);
@@ -89,7 +97,7 @@ export function rovingFocus(
 
     // Home/End jump to the ends, which is what people expect from a menu.
     if (event.key === "Home" || event.key === "End") {
-      const list = items(container);
+      const list = items(container());
       if (list.length === 0) return;
       event.preventDefault();
       focusItem(event.key === "Home" ? list[0]! : list[list.length - 1]!);
@@ -104,19 +112,21 @@ export function rovingFocus(
           : 0;
 
     if (delta === 0) return;
+    const host = container();
     const current = (document.activeElement as HTMLElement | null) ?? active;
-    if (!current || !container.contains(current)) return;
+    if (!host || !current || !host.contains(current)) return;
 
     event.preventDefault();
     step(current, delta);
   };
 
   const onFocusIn = (event: FocusEvent) => {
-    const target = event.target as HTMLElement | null;
-    if (!target || !container.contains(target)) return;
-    if (!target.matches(ITEM)) return;
-    active = target;
-    apply(target);
+    const element = event.target as HTMLElement | null;
+    const host = container();
+    if (!element || !host || !host.contains(element)) return;
+    if (!element.matches(ITEM)) return;
+    active = element;
+    apply(element);
   };
 
   // Establish the single tab stop once items exist. Re-runs when the
@@ -126,32 +136,38 @@ export function rovingFocus(
   // `onCleanup` inside an effect's apply phase is not run on dispose in
   // Solid 2.
   createEffect(
-    () => items(container).length > 0,
+    () => items(container()).length > 0,
     (hasItems) => {
       if (!hasItems) return;
 
-      container.addEventListener("keydown", onKeyDown);
-      container.addEventListener("focusin", onFocusIn);
-      const list = items(container);
+      const host = container();
+      if (!host) return;
+
+      host.addEventListener("keydown", onKeyDown);
+      host.addEventListener("focusin", onFocusIn);
+      const list = items(host);
       if (list.length === 0) return;
 
       // `active` is a mutable closure variable, so the narrowing has to
       // happen through a local before it can be used as an element.
       const current = active;
-      const stillMounted = current !== null && container.contains(current) && list.includes(current);
+      const stillMounted = current !== null && host.contains(current) && list.includes(current);
       const next = stillMounted ? current : (options.initial ?? list[0]!);
       active = next;
       apply(next);
 
       return () => {
-        container.removeEventListener("keydown", onKeyDown);
-        container.removeEventListener("focusin", onFocusIn);
+        host.removeEventListener("keydown", onKeyDown);
+        host.removeEventListener("focusin", onFocusIn);
       };
     },
   );
 
   return {
     focusItem,
-    active: () => (active !== null && container.contains(active) ? active : null),
+    active: () => {
+      const host = container();
+      return active !== null && host !== null && host.contains(active) ? active : null;
+    },
   };
 }

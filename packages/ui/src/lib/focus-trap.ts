@@ -74,6 +74,17 @@ export interface FocusTrapHandle {
 }
 
 /**
+ * Active traps, oldest first. Only the last one reacts.
+ *
+ * Without this, two overlapping overlays fight: each trap's `focusin` pulls
+ * focus to its own container, which fires `focusin` in the other, forever.
+ * That is not only a test artefact — a dialog that opens a sheet leaves the
+ * dialog's trap enabled underneath it, which is the commonest way two
+ * modals meet.
+ */
+const activeTraps: symbol[] = [];
+
+/**
  * Confine Tab and Shift+Tab to `container` while `enabled()` is true, and
  * restore focus to the previously active element when it stops.
  *
@@ -82,15 +93,28 @@ export interface FocusTrapHandle {
  * what makes the trap actually hold rather than merely cycle.
  */
 export function focusTrap(
-  container: HTMLElement,
+  container: HTMLElement | (() => HTMLElement | null | undefined),
   enabled: () => boolean,
   options: FocusTrapOptions = {},
 ): FocusTrapHandle {
-  const previous =
-    typeof document === "undefined" ? null : (document.activeElement as HTMLElement | null);
+  // The container can arrive after the call: an overlay renders its panel
+  // inside a `<Show>`, so the ref is unset when this runs. A function is read
+  // on every pass instead, which re-targets the trap when the panel remounts.
+  const element = (): HTMLElement | null =>
+    typeof container === "function" ? (container() ?? null) : container;
+
+  /**
+   * Focus to restore when the trap closes. Captured when the trap *opens*,
+   * not when it is constructed — a component that builds its trap while
+   * hidden has nothing meaningful to restore to otherwise.
+   */
+  let previous: HTMLElement | null = null;
+  const token = Symbol("focus-trap");
 
   const focus = () => {
     if (typeof document === "undefined") return;
+    const container = element();
+    if (!container) return;
 
     // Resolution order, most explicit first:
 //   1. a caller-supplied `initialFocus`
@@ -115,8 +139,13 @@ const target =
     target.focus({ preventScroll: true });
   };
 
+  /** True while this trap is the innermost active one. */
+  const isTop = (): boolean => activeTraps[activeTraps.length - 1] === token;
+
   const onKeyDown = (event: KeyboardEvent) => {
-    if (!enabled() || event.key !== "Tab") return;
+    if (!enabled() || !isTop() || event.key !== "Tab") return;
+    const container = element();
+    if (!container) return;
 
     const items = focusableWithin(container);
     if (items.length === 0) {
@@ -142,7 +171,11 @@ const target =
   };
 
   const onFocusIn = (event: FocusEvent) => {
-    if (!enabled()) return;
+    // Only the innermost trap reacts; see `activeTraps`.
+    if (!enabled() || !isTop()) return;
+    const container = element();
+    if (!container) return;
+
     const target = event.target as Node | null;
     if (target && container.contains(target)) return;
     if (target !== previous) {
@@ -164,17 +197,24 @@ const target =
   // the root is disposed. The value the apply phase returns is the teardown,
   // and that is what Solid actually calls.
   createEffect(
-    () => enabled(),
+    () => (element() ? enabled() : false),
     (active) => {
       // The apply phase runs on every pass, including the first, so the gate
       // lives here rather than in the compute.
       if (!active) return;
 
+      // Read at open time, so restoring lands on the trigger rather than on
+      // whatever was focused when the component was constructed.
+      previous = typeof document === "undefined" ? null : (document.activeElement as HTMLElement | null);
+
+      activeTraps.push(token);
       document.addEventListener("keydown", onKeyDown, true);
       document.addEventListener("focusin", onFocusIn, true);
       focus();
 
       return () => {
+        const at = activeTraps.indexOf(token);
+        if (at !== -1) activeTraps.splice(at, 1);
         document.removeEventListener("keydown", onKeyDown, true);
         document.removeEventListener("focusin", onFocusIn, true);
         restore();

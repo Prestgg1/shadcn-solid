@@ -16,18 +16,28 @@ import { omit } from "solid-js";
  * const [local, rest] = split(props, ["class", "variant"]);
  * ```
  *
- * `omit` is used rather than a loop because it returns a proxy that keeps
- * reading `rest.x` reactive; a plain object copy would freeze every
- * forwarded prop at split time.
+ * Both halves are proxies, not copies, and that is not a style choice.
+ *
+ * **`children` must not be read eagerly.** In Solid 2 JSX children compile to
+ * a lazy getter on `props.children`. Reading it during the split evaluates
+ * the subtree *before* the component body runs, so a provider further down
+ * has not been created yet and every `useContext` beneath it throws
+ * `ContextNotFoundError`. A proxy defers the read to the point of use, which
+ * is inside the provider.
+ *
+ * The proxies also keep `local.x` and `rest.x` reactive, where a plain object
+ * copy would freeze every forwarded prop at split time.
  */
 export function split<T extends object, const K extends readonly (keyof T)[]>(
   props: T,
   keys: K,
 ): [Pick<T, K[number]>, Omit<T, K[number]>] {
-  const local = {} as Pick<T, K[number]>;
-  for (const key of keys) {
-    if (key in props) local[key] = props[key] as T[K[number]];
-  }
+  const local = new Proxy({} as Pick<T, K[number]>, {
+    get: (_target, key) => (props as Record<PropertyKey, unknown>)[key as PropertyKey],
+    has: (_target, key) => keys.includes(key as K[number]) && key in props,
+    ownKeys: () => keys.filter((key) => key in props) as unknown as string[],
+    getOwnPropertyDescriptor: () => ({ enumerable: true, configurable: true }),
+  });
 
   // `omit` is generic over a `readonly (keyof T)[]` tuple and returns
   // `Omit<T, K>`; spreading `K` through an array widens the tuple, so the

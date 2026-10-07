@@ -22,7 +22,7 @@ function cancelFrame(id: number | undefined): void {
  * can be observed. Racing `animationend`/`transitionend` against a timeout
  * keeps a skipped animation (reduced motion, `duration: 0`) from hanging.
  */
-function afterAnimation(element: Element, done: () => void): () => void {
+function afterAnimation(element: HTMLElement, done: () => void): () => void {
   let finished = false;
   let timer: ReturnType<typeof setTimeout> | undefined;
 
@@ -49,10 +49,20 @@ function afterAnimation(element: Element, done: () => void): () => void {
       return;
     }
 
+    // An empty string counts as "no animation" alongside `"none"`: not every
+    // DOM implementation reports `none` for a missing animation, and reading
+    // `""` as an active animation would park the exit on a listener that
+    // never fires.
+    const animates = (value: string): boolean => value !== "" && value !== "none";
+
     const style = window.getComputedStyle(element);
     const runs =
-      style.animationName !== "none" ||
-      (style.transitionProperty !== "none" && style.transitionDuration !== "0s");
+      animates(style.animationName) ||
+      // Some DOM implementations do not expand the `animation` shorthand into
+      // its longhands, so an inline animation is invisible above. Read it
+      // directly as well rather than unmounting mid-animation.
+      element.style.animation !== "" ||
+      (animates(style.transitionProperty) && style.transitionDuration !== "0s");
 
     if (!runs) {
       finish();
@@ -128,7 +138,7 @@ export function createPresence(when: Accessor<boolean>): Presence {
     setState("closed");
       if (element) {
         cancelExit?.();
-        cancelExit = afterAnimation(element, unmount);
+        cancelExit = afterAnimation(element as HTMLElement, unmount);
         return;
       }
 

@@ -122,6 +122,60 @@ export const ui: RegistryItem[] = [
     description: "The nothing-here-yet state, with a way out.",
     registryDependencies: ["cn", "split", "variants"],
     files: [{ path: "ui/empty.tsx", type: "ui", target: "empty.tsx" }] },
+
+  // --- disclosure -------------------------------------------------------
+  { name: "collapsible", type: "registry:ui", title: "Collapsible",
+    description: "One region that shows or hides, with a trigger that reports its state.",
+    registryDependencies: ["cn", "split"],
+    files: [{ path: "ui/collapsible.tsx", type: "ui", target: "collapsible.tsx" }] },
+  { name: "accordion", type: "registry:ui", title: "Accordion",
+    description: "Several disclosures where opening one can close the others. One tab stop, arrows between triggers.",
+    registryDependencies: ["cn", "split", "roving-focus"],
+    files: [{ path: "ui/accordion.tsx", type: "ui", target: "accordion.tsx" }] },
+  { name: "tabs", type: "registry:ui", title: "Tabs",
+    description: "Panels switched by one tab stop. Automatic activation switches as focus moves; manual waits for Enter.",
+    registryDependencies: ["cn", "split", "roving-focus"],
+    files: [{ path: "ui/tabs.tsx", type: "ui", target: "tabs.tsx" }] },
+
+  // --- layout -----------------------------------------------------------
+  { name: "scroll-area", type: "registry:ui", title: "ScrollArea",
+    description: "A scrollable region with styled scrollbars, on native scrolling.",
+    registryDependencies: ["cn", "split"],
+    files: [{ path: "ui/scroll-area.tsx", type: "ui", target: "scroll-area.tsx" }] },
+  { name: "resizable", type: "registry:ui", title: "Resizable",
+    description: "Panels separated by a divider that drags, and resizes with the arrow keys.",
+    registryDependencies: ["cn", "split"],
+    files: [{ path: "ui/resizable.tsx", type: "ui", target: "resizable.tsx" }] },
+
+  // --- overlays ---------------------------------------------------------
+  { name: "dialog", type: "registry:ui", title: "Dialog",
+    description: "A modal window: trapped focus, a locked page behind, Escape and scrim dismissal.",
+    registryDependencies: ["cn", "split", "slot", "presence", "focus-trap", "scroll-lock", "dismissable", "portal"],
+    files: [{ path: "ui/dialog.tsx", type: "ui", target: "dialog.tsx" }] },
+  { name: "alert-dialog", type: "registry:ui", title: "AlertDialog",
+    description: "A dialog that interrupts to confirm. Focus starts on Cancel, so the safe choice is the resting state.",
+    registryDependencies: ["cn", "split", "slot", "presence", "focus-trap", "scroll-lock", "dismissable", "portal"],
+    files: [{ path: "ui/alert-dialog.tsx", type: "ui", target: "alert-dialog.tsx" }] },
+  { name: "sheet", type: "registry:ui", title: "Sheet",
+    description: "A dialog that slides in from an edge.",
+    registryDependencies: ["cn", "split", "slot", "presence", "focus-trap", "scroll-lock", "dismissable", "portal"],
+    files: [{ path: "ui/sheet.tsx", type: "ui", target: "sheet.tsx" }] },
+  { name: "drawer", type: "registry:ui", title: "Drawer",
+    description: "A panel that springs up from the bottom, for phone menus.",
+    registryDependencies: ["cn", "split", "slot", "presence", "focus-trap", "scroll-lock", "dismissable", "portal"],
+    files: [{ path: "ui/drawer.tsx", type: "ui", target: "drawer.tsx" }] },
+  { name: "popover", type: "registry:ui", title: "Popover",
+    description: "A floating panel on a trigger. Non-modal: the page behind stays live.",
+    registryDependencies: ["cn", "split", "slot", "floating", "dismissable", "portal"],
+    files: [{ path: "ui/popover.tsx", type: "ui", target: "popover.tsx" }] },
+  { name: "hover-card", type: "registry:ui", title: "HoverCard",
+    description: "A preview panel on hover, with open and close delays so it does not flash in the way.",
+    registryDependencies: ["cn", "split", "slot", "floating", "dismissable", "portal"],
+    files: [{ path: "ui/hover-card.tsx", type: "ui", target: "hover-card.tsx" }] },
+  { name: "tooltip", type: "registry:ui", title: "Tooltip",
+    description: "A short label for a control that has no visible text. Opens immediately; Escape dismisses.",
+    registryDependencies: ["cn", "split", "slot", "floating", "portal"],
+    files: [{ path: "ui/tooltip.tsx", type: "ui", target: "tooltip.tsx" }] },
 ];
 
 /** Shared code that items import but do not carry themselves. */
@@ -167,57 +221,64 @@ export const lib: RegistryItem[] = [
 ];
 
 /** Hooks and DOM primitives that overlay and menu components share. */
-export const hooks: RegistryItem[] = [
+
+/*
+ * The primitives the overlays are built on. Registered as `registry:lib`
+ * rather than `registry:hook`: they are shared code a component *imports*,
+ * and they have to land in the same directory as `cn`/`split` so the
+ * `~/lib/…` imports inside the components resolve.
+ */
+export const primitives: RegistryItem[] = [
   {
     name: "presence",
-    type: "registry:hook",
+    type: "registry:lib",
     title: "createPresence",
     description: "Keeps a subtree mounted until its exit animation has played.",
-    files: [{ path: "lib/presence.ts", type: "hook", target: "lib/presence.ts" }],
+    files: [{ path: "lib/presence.ts", type: "lib", target: "lib/presence.ts" }],
   },
   {
     name: "focus-trap",
-    type: "registry:hook",
+    type: "registry:lib",
     title: "focusTrap",
     description: "Confines Tab to a container and restores focus when it closes.",
-    files: [{ path: "lib/focus-trap.ts", type: "hook", target: "lib/focus-trap.ts" }],
+    files: [{ path: "lib/focus-trap.ts", type: "lib", target: "lib/focus-trap.ts" }],
   },
   {
     name: "scroll-lock",
-    type: "registry:hook",
+    type: "registry:lib",
     title: "scrollLock",
     description: "Reference-counted body scroll lock for nested overlays.",
-    files: [{ path: "lib/scroll-lock.ts", type: "hook", target: "lib/scroll-lock.ts" }],
+    files: [{ path: "lib/scroll-lock.ts", type: "lib", target: "lib/scroll-lock.ts" }],
   },
   {
     name: "roving-focus",
-    type: "registry:hook",
+    type: "registry:lib",
     title: "rovingFocus",
     description: "The roving-tabindex pattern for menus, tabs and toggle groups.",
-    files: [{ path: "lib/roving-focus.ts", type: "hook", target: "lib/roving-focus.ts" }],
+    files: [{ path: "lib/roving-focus.ts", type: "lib", target: "lib/roving-focus.ts" }],
   },
   {
     name: "floating",
-    type: "registry:hook",
+    type: "registry:lib",
     title: "floatingPanel",
     description: "Positioning for popovers, menus and selects, via @floating-ui/dom.",
     dependencies: ["@floating-ui/dom"],
     registryDependencies: ["presence"],
-    files: [{ path: "lib/floating.tsx", type: "hook", target: "lib/floating.tsx" }],
+    files: [{ path: "lib/floating.tsx", type: "lib", target: "lib/floating.tsx" }],
   },
   {
     name: "dismissable",
-    type: "registry:hook",
+    type: "registry:lib",
     title: "dismissable",
     description: "Close-on-outside-press and Escape, safe inside nested overlays.",
-    files: [{ path: "lib/dismissable.ts", type: "hook", target: "lib/dismissable.ts" }],
+    files: [{ path: "lib/dismissable.ts", type: "lib", target: "lib/dismissable.ts" }],
   },
   {
     name: "portal",
-    type: "registry:hook",
+    type: "registry:lib",
     title: "Portal",
     description: "Render into document.body, resolved lazily so SSR is safe.",
-    files: [{ path: "lib/portal.tsx", type: "hook", target: "lib/portal.tsx" }],
+    files: [{ path: "lib/portal.tsx", type: "lib", target: "lib/portal.tsx" }],
   },
 ];
 
@@ -232,4 +293,4 @@ export const styles: RegistryItem[] = [
   },
 ];
 
-export const items: RegistryItem[] = [...lib, ...hooks, ...ui, ...styles];
+export const items: RegistryItem[] = [...lib, ...primitives, ...ui, ...styles];

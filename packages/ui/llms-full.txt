@@ -159,3 +159,51 @@ One row of a list: media, text, actions.
 # empty
 
 The nothing-here-yet state, with a way out.
+
+# collapsible
+
+One region that shows or hides, with a trigger that reports its state.
+
+# accordion
+
+Several disclosures where opening one can close the others. One tab stop, arrows between triggers.
+
+# tabs
+
+Panels switched by one tab stop. Automatic activation switches as focus moves; manual waits for Enter.
+
+# scroll-area
+
+A scrollable region with styled scrollbars, on native scrolling.
+
+# resizable
+
+Panels separated by a divider that drags, and resizes with the arrow keys.
+
+# dialog
+
+A modal window: trapped focus, a locked page behind, Escape and scrim dismissal.
+
+# alert-dialog
+
+A dialog that interrupts to confirm. Focus starts on Cancel, so the safe choice is the resting state.
+
+# sheet
+
+A dialog that slides in from an edge.
+
+# drawer
+
+A panel that springs up from the bottom, for phone menus.
+
+# popover
+
+A floating panel on a trigger. Non-modal: the page behind stays live.
+
+# hover-card
+
+A preview panel on hover, with open and close delays so it does not flash in the way.
+
+# tooltip
+
+A short label for a control that has no visible text. Opens immediately; Escape dismisses.

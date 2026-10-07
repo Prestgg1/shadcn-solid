@@ -68,8 +68,28 @@ export function asChild(
   createEffect(
     () => node,
     () => {
+      /** Listeners added this pass, so the next pass can remove them. */
+      const listeners: [string, EventListener][] = [];
+
       for (const [key, value] of Object.entries(inject(propsOf(node)))) {
         if (RESERVED.has(key)) continue;
+
+        // A function is behaviour, not markup. `ref` is called; `onX`
+        // becomes a real listener. Writing these as attributes would produce
+        // `onclick="() => …"` on the element and nothing would ever fire —
+        // which is exactly the behaviour a slot is being used to get.
+        if (typeof value === "function") {
+          if (key === "ref") {
+            (value as (element: Element) => void)(node);
+            continue;
+          }
+
+          const type = key.startsWith("on") ? key.slice(2).toLowerCase() : key;
+          const listener = value as EventListener;
+          node.addEventListener(type, listener);
+          listeners.push([type, listener]);
+          continue;
+        }
 
         if (key === "class") {
           const existing = node.getAttribute("class");
@@ -84,6 +104,14 @@ export function asChild(
           node.setAttribute(key, value === true ? "" : String(value));
         }
       }
+
+      // Returned, not `onCleanup`: in Solid 2 a cleanup registered inside an
+      // effect's apply phase does not run on dispose.
+      return () => {
+        for (const [type, listener] of listeners) {
+          node.removeEventListener(type, listener);
+        }
+      };
     },
   );
 
